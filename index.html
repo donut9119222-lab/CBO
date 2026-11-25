@@ -21,13 +21,37 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      padding: 18px 14px calc(40px + env(safe-area-inset-bottom));
+      padding: 14px 14px calc(48px + env(safe-area-inset-bottom));
       overflow-x: hidden;
+      position: relative;
     }
 
-    .container { max-width: 640px; margin: 0 auto; width: 100%; }
+    /* Тонкая сетка из точек на фоне */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(184, 35, 43, 0.09) 1px, transparent 1px);
+      background-size: 22px 22px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+    }
 
-    /* ============ АНИМАЦИИ (keyframes) ============ */
+    /* Лёгкий шум-виньетка */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { max-width: 640px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+    /* ============ KEYFRAMES ============ */
     @keyframes fadeUp {
       0%   { opacity: 0; transform: translateY(14px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -67,21 +91,80 @@
       60%  { transform: scale(1.02); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
     }
-    @keyframes shimmer {
-      0%   { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+    @keyframes statusDot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(60, 200, 90, 0.8); }
+      50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(60, 200, 90, 0.3); }
     }
-    @keyframes driftGlow {
-      0%, 100% { transform: translate(0, 0); }
-      50%      { transform: translate(4px, -3px); }
+    @keyframes recDot {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.25; }
+    }
+    @keyframes glitch {
+      0%, 92%, 100% { transform: translate(0); text-shadow: none; }
+      93%  { transform: translate(-2px, 0); text-shadow: 2px 0 #b8232b, -2px 0 #4a8fff; }
+      94%  { transform: translate(2px, 0); text-shadow: -2px 0 #b8232b, 2px 0 #4a8fff; }
+      95%  { transform: translate(0); }
+      96%  { transform: translate(-1px, 1px); text-shadow: 1px 0 #b8232b; }
+      97%  { transform: translate(1px, -1px); text-shadow: -1px 0 #4a8fff; }
+      98%  { transform: translate(0); }
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes tickerPulse {
+      0%, 100% { opacity: 0.35; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ---------- Статус-бар сверху ---------- */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9.5px;
+      color: #6b5254;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 0 2px 10px;
+      border-bottom: 1px dashed #2a1416;
+      margin-bottom: 16px;
+      animation: fadeIn 0.8s ease both;
+    }
+
+    .status-bar .left, .status-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #3cc85a;
+      animation: statusDot 1.6s ease-in-out infinite;
+    }
+
+    .rec-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #b8232b;
+      animation: recDot 1.2s steps(2, end) infinite;
+      margin-right: 4px;
+    }
+
+    .status-bar .sep {
+      color: #2a1416;
     }
 
     /* ---------- Шапка ---------- */
     .header {
       text-align: center;
-      padding: 18px 0 22px;
+      padding: 14px 0 20px;
       border-bottom: 1px solid rgba(160, 20, 30, 0.35);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       position: relative;
       animation: fadeUp 0.6s ease both;
     }
@@ -97,7 +180,16 @@
       margin-bottom: 12px;
       text-transform: uppercase;
       animation: stampFlicker 6s infinite;
+      position: relative;
     }
+    .stamp::before, .stamp::after {
+      content: "";
+      position: absolute;
+      top: 50%; width: 8px; height: 1px;
+      background: rgba(184, 35, 43, 0.55);
+    }
+    .stamp::before { left: -12px; }
+    .stamp::after  { right: -12px; }
 
     h1 {
       font-size: 24px;
@@ -107,6 +199,7 @@
       text-transform: uppercase;
       line-height: 1.15;
       margin-bottom: 8px;
+      animation: glitch 8s infinite;
     }
 
     .subtitle {
@@ -114,16 +207,43 @@
       color: #6b5254;
       text-transform: uppercase;
       letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .subtitle::before, .subtitle::after {
+      content: "";
+      width: 20px; height: 1px;
+      background: #2a1416;
     }
 
     .cursor {
       display: inline-block;
       width: 0.5em;
-      height: 1em;
+      height: 0.9em;
       background: #b8232b;
       vertical-align: text-bottom;
       margin-left: 4px;
       animation: blink 1s step-end infinite;
+    }
+
+    /* Тики-деления под шапкой */
+    .ticker-marks {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 8px;
+      margin: 8px 0 0;
+      animation: fadeIn 1s ease 0.3s both;
+    }
+    .ticker-marks .tick {
+      width: 1px;
+      height: 4px;
+      background: #2a1416;
+    }
+    .ticker-marks .tick.major {
+      height: 8px;
+      background: #48191d;
     }
 
     /* ---------- Сетка ---------- */
@@ -146,17 +266,14 @@
       transition: border-color 0.25s ease, transform 0.2s ease;
     }
 
-    /* Задержки появления карточек (каскад) */
     .grid .card:nth-child(1) { animation-delay: 0.10s; }
     .grid .card:nth-child(2) { animation-delay: 0.22s; }
     #squad-card              { animation-delay: 0.34s; }
     #join-card               { animation-delay: 0.46s; }
     #list-card               { animation-delay: 0.58s; }
 
-    /* Лёгкая пульсация рамки */
     .card:hover { border-color: #48191d; transform: translateY(-2px); }
 
-    /* Сканирующая линия внутри карточки */
     .card::before {
       content: "";
       position: absolute;
@@ -194,6 +311,18 @@
       border-bottom-right-radius: 6px;
     }
 
+    /* Серийный номер карточки в правом верхнем углу */
+    .serial {
+      position: absolute;
+      top: 6px; right: 8px;
+      font-size: 8px;
+      color: #4a3436;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 3;
+      opacity: 0.8;
+    }
+
     .card h2 {
       font-size: 12px;
       font-weight: 700;
@@ -206,6 +335,7 @@
       gap: 6px;
       position: relative;
       z-index: 2;
+      padding-right: 44px;
     }
 
     .card h2 .idx {
@@ -228,6 +358,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       width: 100%;
       padding: 12px 10px;
       font-family: inherit;
@@ -250,6 +381,13 @@
       animation: pulseGlow 2.8s ease-in-out infinite;
     }
 
+    .btn::after {
+      content: "›";
+      font-size: 16px;
+      line-height: 1;
+      opacity: 0.75;
+    }
+
     .btn:hover { background: #cf2a33; }
     .btn:active { transform: translateY(1px) scale(0.99); }
 
@@ -259,10 +397,14 @@
       border: 1px solid rgba(184, 35, 43, 0.55);
       animation: none;
     }
+    .btn.ghost::after { content: "→"; font-size: 13px; }
     .btn.ghost:hover {
       background: rgba(184, 35, 43, 0.10);
       animation: pulseGlow 2.4s ease-in-out infinite;
     }
+
+    /* Кнопка-генератор без стрелки */
+    .btn.no-arrow::after { content: ""; }
 
     /* ---------- Выдача отряда ---------- */
     #rank-box {
@@ -277,6 +419,25 @@
       position: relative;
       z-index: 2;
       animation: borderPulse 4s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    /* Мелкие тики в углах rank-box */
+    #rank-box::before,
+    #rank-box::after {
+      content: "";
+      position: absolute;
+      width: 14px; height: 14px;
+      border-color: rgba(184, 35, 43, 0.35);
+      border-style: solid;
+    }
+    #rank-box::before {
+      top: 4px; left: 4px;
+      border-width: 1px 0 0 1px;
+    }
+    #rank-box::after {
+      bottom: 4px; right: 4px;
+      border-width: 0 1px 1px 0;
     }
 
     #rank-box.filled {
@@ -290,6 +451,8 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 5px;
+      padding-left: 8px;
+      border-left: 2px solid #b8232b;
     }
 
     #rank-desc {
@@ -328,6 +491,7 @@
       padding: 10px;
       transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       animation: fadeIn 0.8s ease both;
+      position: relative;
     }
 
     .squad:nth-child(1) { animation-delay: 0.70s; }
@@ -351,6 +515,17 @@
       letter-spacing: 0.5px;
       margin-bottom: 4px;
       line-height: 1.3;
+      padding-right: 18px;
+    }
+
+    /* Мини-индикатор в углу каждой карточки отряда */
+    .squad::after {
+      content: "●";
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 6px;
+      color: #b8232b;
+      animation: tickerPulse 2.5s ease-in-out infinite;
     }
 
     .squad .desc {
@@ -359,21 +534,64 @@
       line-height: 1.4;
     }
 
+    /* ---------- Бегущая строка внизу ---------- */
+    .marquee {
+      margin-top: 20px;
+      border-top: 1px dashed #2a1416;
+      border-bottom: 1px dashed #2a1416;
+      padding: 8px 0;
+      overflow: hidden;
+      position: relative;
+      animation: fadeIn 1.2s ease 1s both;
+    }
+    .marquee::before, .marquee::after {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 30px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .marquee::before { left: 0; background: linear-gradient(90deg, #0a0506, transparent); }
+    .marquee::after  { right: 0; background: linear-gradient(270deg, #0a0506, transparent); }
+
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 22s linear infinite;
+      width: max-content;
+    }
+    .marquee-track span {
+      font-size: 10px;
+      color: #6b5254;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding-right: 28px;
+    }
+    .marquee-track span b { color: #b8232b; font-weight: 700; }
+
     /* ---------- Дисклеймер ---------- */
     .disclaimer {
       font-size: 9.5px;
       color: #4a3436;
       text-align: center;
-      margin-top: 18px;
-      line-height: 1.5;
+      margin-top: 14px;
+      line-height: 1.6;
       letter-spacing: 1px;
       text-transform: uppercase;
       animation: fadeIn 1.4s ease 1.2s both;
+      padding: 0 4px;
+    }
+    .disclaimer .coord {
+      display: block;
+      margin-top: 6px;
+      color: #2a1416;
+      font-size: 9px;
     }
 
     /* ---------- Планшет / десктоп ---------- */
     @media (min-width: 560px) {
-      body { padding: 28px 20px 60px; }
+      body { padding: 22px 20px 60px; }
       h1 { font-size: 30px; }
       .card { padding: 18px; }
       .card p { font-size: 13px; }
@@ -382,9 +600,9 @@
       .squad { padding: 12px; }
       .squad .name { font-size: 12px; }
       .squad .desc { font-size: 11.5px; }
+      .serial { font-size: 9px; }
     }
 
-    /* ---------- Уважение к «уменьшить движение» ---------- */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.001ms !important;
@@ -397,16 +615,34 @@
 <body>
   <div class="container">
 
+    <!-- Статус-бар сверху -->
+    <div class="status-bar">
+      <div class="left">
+        <span class="status-dot"></span>
+        <span>ONLINE</span>
+      </div>
+      <div class="right">
+        <span><span class="rec-dot"></span>REC</span>
+        <span class="sep">|</span>
+        <span id="clock">--:--:--</span>
+      </div>
+    </div>
+
+    <!-- Шапка -->
     <div class="header">
       <span class="stamp">// SECURE CHANNEL</span>
       <h1>Штаб Мопс-Бригады<span class="cursor"></span></h1>
       <p class="subtitle">Связь · Отчёты · Рейды</p>
+
+      <!-- Тики-деления -->
+      <div class="ticker-marks" id="tickerMarks"></div>
     </div>
 
     <!-- Канал + Контракт -->
     <div class="grid">
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x1A</span>
         <h2><span class="idx">[01]</span> Канал MAX</h2>
         <p>Публикуем рейды, отчёты и т.д.</p>
         <a href="https://max.ru/join/cqxpumoGDVmDanOn3oR9ThzYHAsTUxG-N6_WG8-SMZE" class="btn" target="_blank" rel="noopener">
@@ -416,6 +652,7 @@
 
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x2B</span>
         <h2><span class="idx">[02]</span> Контракт</h2>
         <p>Пиши — обсудим. И отговорим.</p>
         <a href="https://max.ru/c/-81659530068092/AaIUoCT2FJQ" class="btn ghost" target="_blank" rel="noopener">
@@ -427,9 +664,10 @@
     <!-- Генератор -->
     <div class="card" id="join-card" style="margin-bottom: 12px;">
       <span class="corner-tl"></span><span class="corner-br"></span>
+      <span class="serial">SN-0x3C</span>
       <h2><span class="idx">[03]</span> Назначение в отряд</h2>
       <p>Нажми — система распределит тебя в один из отрядов бригады.</p>
-      <button class="btn" onclick="randomRank()">Получить назначение</button>
+      <button class="btn no-arrow" onclick="randomRank()">Получить назначение</button>
       <div id="rank-box" style="margin-top: 12px;">
         <div class="placeholder">// ожидание приказа</div>
       </div>
@@ -438,6 +676,7 @@
     <!-- Все отряды -->
     <div class="card" id="list-card">
       <span class="corner-tl"></span><span class="corner-br"></span>
+      <span class="serial">SN-0x4D</span>
       <h2><span class="idx">[04]</span> Отряды бригады</h2>
       <div class="squad-grid">
         <div class="squad">
@@ -463,8 +702,28 @@
       </div>
     </div>
 
+    <!-- Бегущая строка -->
+    <div class="marquee">
+      <div class="marquee-track" id="marquee">
+        <span><b>▲</b> Канал активен</span>
+        <span><b>●</b> Пост наблюдения #3 — тишина</span>
+        <span><b>▲</b> Дрон-мопс вернулся на базу</span>
+        <span><b>●</b> Перекличка отрядов: OK</span>
+        <span><b>▲</b> Сеанс связи: зашифрован</span>
+        <span><b>●</b> Отчётов за сутки: 0</span>
+        <!-- дубль для бесшовности -->
+        <span><b>▲</b> Канал активен</span>
+        <span><b>●</b> Пост наблюдения #3 — тишина</span>
+        <span><b>▲</b> Дрон-мопс вернулся на базу</span>
+        <span><b>●</b> Перекличка отрядов: OK</span>
+        <span><b>▲</b> Сеанс связи: зашифрован</span>
+        <span><b>●</b> Отчётов за сутки: 0</span>
+      </div>
+    </div>
+
     <p class="disclaimer">
       Сайт-мем. Все отряды, звания и операции — вымышленные. Совпадения случайны.
+      <span class="coord">55.75°N / 37.61°E · SECTOR 04 · BUILD 2.11.26</span>
     </p>
 
   </div>
@@ -489,7 +748,6 @@
 
       const squad = squads[i];
 
-      // короткая «перезагрузка» текста для эффекта сканирования
       box.classList.remove('filled');
       box.innerHTML = '<div class="placeholder">// обработка запроса</div>';
 
@@ -500,6 +758,27 @@
         box.classList.add('filled');
       }, 420);
     }
+
+    // Часы
+    function updateClock() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('clock').textContent =
+        pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Тики-деления в шапке
+    (function buildTicks() {
+      const wrap = document.getElementById('tickerMarks');
+      const count = 32;
+      for (let i = 0; i < count; i++) {
+        const t = document.createElement('span');
+        t.className = 'tick' + (i % 8 === 0 ? ' major' : '');
+        wrap.appendChild(t);
+      }
+    })();
   </script>
 </body>
 </html>
