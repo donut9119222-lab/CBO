@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Штаб вайб-бригады</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+    }
+
+    .container { max-width: 520px; width: 100%; }
+
+    h1 {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      color: #8e8e93;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      transition: transform 0.15s ease;
+    }
+
+    .card:active { transform: scale(0.98); }
+
+    .card h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 15px; color: #3a3a3c; margin-bottom: 16px; }
+    .card .note { font-size: 13px; color: #8e8e93; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      text-decoration: none;
+      color: #ffffff;
+      background: #007aff;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+      margin-top: 8px;
+    }
+
+    .btn:active { opacity: 0.7; }
+
+    .btn.secondary { background: #e5e5ea; color: #007aff; }
+
+    .btn-group { display: flex; flex-direction: column; gap: 10px; }
+
+    .disclaimer {
+      font-size: 12px;
+      color: #c7c7cc;
+      text-align: center;
+      margin-top: 32px;
+      line-height: 1.4;
+    }
+
+    .emoji-icon { font-size: 40px; display: block; margin-bottom: 12px; text-align: center; }
+
+    /* Блок генератора звания */
+    #rank-box {
+      margin-top: 14px;
+      padding: 16px;
+      background: #f2f2f7;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1c1c1e;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Штаб вайб-бригады</h1>
+    <p class="subtitle">Серьёзное лицо — не обязательно</p>
+
+    <!-- MAX -->
+    <div class="card">
+      <span class="emoji-icon">📡</span>
+      <h2>Наш канал в MAX</h2>
+      <p>Там мы публикуем мемы, отчёты о дебаге и расписание «медитаций» над кодом.</p>
+      <a href="https://max.ru/ВАШ_КАНАЛ" class="btn" target="_blank" rel="noopener">
+        Открыть канал в MAX
+      </a>
+      <p class="note" style="margin-top: 12px;">Ссылку замени на свою</p>
+    </div>
+
+    <!-- Чаты -->
+    <div class="card">
+      <span class="emoji-icon">💬</span>
+      <h2>Чаты для «контрактников»</h2>
+      <p>Если вдруг захотелось «подписать контракт» — сначала зайдите в чат. Мы выслушаем, дадим чаю и отговорим. Шутка. Или нет.</p>
+      <div class="btn-group">
+        <a href="https://t.me/ВАШ_ЧАТ_1" class="btn secondary" target="_blank" rel="noopener">Чат №1 (главный)</a>
+        <a href="https://t.me/ВАШ_ЧАТ_2" class="btn secondary" target="_blank" rel="noopener">Чат №2 (запасной)</a>
+      </div>
+      <p class="note" style="margin-top: 12px;">Ссылки замени на свои</p>
+    </div>
+
+    <!-- Генератор звания -->
+    <div class="card">
+      <span class="emoji-icon">🎖️</span>
+      <h2>Генератор вайб-звания</h2>
+      <p>Нажми и получи своё шуточное звание в бригаде.</p>
+      <button class="btn secondary" onclick="randomRank()">Получить звание</button>
+      <div id="rank-box">—</div>
+    </div>
+
+    <!-- Предупреждение -->
+    <div class="card">
+      <span class="emoji-icon">⚠️</span>
+      <h2>Важное предупреждение</h2>
+      <p>Этот сайт — шутка. Никаких реальных контрактов, призывов или серьёзных намерений. Только вайб, код и мемы.</p>
+      <p class="note">Если вам написали «контракт» — это, скорее всего, баг. Перезагрузите страницу.</p>
+    </div>
+
+    <p class="disclaimer">
+      Сделано на коленке в блокноте. Не является официальным ресурсом. Любые совпадения случайны.
+    </p>
+
+  </div>
+
+  <script>
+    const ranks = [
+      "Рядовой коммита",
+      "Ефрейтор дебага",
+      "Сержант рефакторинга",
+      "Старшина вайба",
+      "Прапорщик мёрж-конфликтов",
+      "Лейтенант тасков",
+      "Капитан баг-репортов",
+      "Майор хотфиксов",
+      "Полковник проды",
+      "Генерал-лейтенант тайпскрипта",
+      "Маршал чистого кода",
+      "Легенда Stack Overflow"
+    ];
+
+    function randomRank() {
+      const box = document.getElementById('rank-box');
+      const rank = ranks[Math.floor(Math.random() * ranks.length)];
+      box.textContent = rank;
+      box.style.animation = 'none';
+      void box.offsetWidth;
+      box.style.animation = 'pop 0.25s ease';
+    }
+  </script>
+
+  <style>
+    @keyframes pop {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</body>
+</html>
