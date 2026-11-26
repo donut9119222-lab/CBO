@@ -7,7 +7,6 @@
   <title>ШТАБ МОПС-БРИГАДЫ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
     body {
@@ -26,7 +25,6 @@
       position: relative;
     }
 
-    /* Тонкая сетка из точек на фоне */
     body::before {
       content: "";
       position: fixed;
@@ -39,7 +37,6 @@
       -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
     }
 
-    /* Лёгкий шум-виньетка */
     body::after {
       content: "";
       position: fixed;
@@ -52,542 +49,209 @@
     .container { max-width: 640px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
 
     /* ============ KEYFRAMES ============ */
-    @keyframes fadeUp {
-      0%   { opacity: 0; transform: translateY(14px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      0%   { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(184, 35, 43, 0.55); }
-      50%      { box-shadow: 0 0 18px 2px rgba(184, 35, 43, 0.35); }
-    }
-    @keyframes borderPulse {
-      0%, 100% { border-color: #2a1416; }
-      50%      { border-color: #48191d; }
-    }
-    @keyframes scanline {
-      0%   { top: -10%; opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 1; }
-      100% { top: 110%; opacity: 0; }
-    }
-    @keyframes blink {
-      0%, 49%   { opacity: 1; }
-      50%, 100% { opacity: 0; }
-    }
-    @keyframes stampFlicker {
-      0%, 100% { opacity: 1; }
-      92%      { opacity: 1; }
-      93%      { opacity: 0.4; }
-      94%      { opacity: 1; }
-      96%      { opacity: 0.7; }
-      97%      { opacity: 1; }
-    }
-    @keyframes popIn {
-      0%   { transform: scale(0.94); opacity: 0.3; }
-      60%  { transform: scale(1.02); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes statusDot {
-      0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(60, 200, 90, 0.8); }
-      50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(60, 200, 90, 0.3); }
-    }
-    @keyframes recDot {
-      0%, 100% { opacity: 1; }
-      50%      { opacity: 0.25; }
-    }
-    @keyframes glitch {
-      0%, 92%, 100% { transform: translate(0); text-shadow: none; }
-      93%  { transform: translate(-2px, 0); text-shadow: 2px 0 #b8232b, -2px 0 #4a8fff; }
-      94%  { transform: translate(2px, 0); text-shadow: -2px 0 #b8232b, 2px 0 #4a8fff; }
-      95%  { transform: translate(0); }
-      96%  { transform: translate(-1px, 1px); text-shadow: 1px 0 #b8232b; }
-      97%  { transform: translate(1px, -1px); text-shadow: -1px 0 #4a8fff; }
-      98%  { transform: translate(0); }
-    }
-    @keyframes marquee {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    @keyframes tickerPulse {
-      0%, 100% { opacity: 0.35; }
-      50%      { opacity: 0.9; }
-    }
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(184, 35, 43, 0.55); } 50% { box-shadow: 0 0 18px 2px rgba(184, 35, 43, 0.35); } }
+    @keyframes borderPulse { 0%, 100% { border-color: #2a1416; } 50% { border-color: #48191d; } }
+    @keyframes scanline { 0% { top: -10%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    @keyframes stampFlicker { 0%, 100% { opacity: 1; } 92% { opacity: 1; } 93% { opacity: 0.4; } 94% { opacity: 1; } 96% { opacity: 0.7; } 97% { opacity: 1; } }
+    @keyframes popIn { 0% { transform: scale(0.94); opacity: 0.3; } 60% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes statusDot { 0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(60, 200, 90, 0.8); } 50% { opacity: 0.5; box-shadow: 0 0 2px rgba(60, 200, 90, 0.3); } }
+    @keyframes recDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+    @keyframes glitch { 0%, 92%, 100% { transform: translate(0); text-shadow: none; } 93% { transform: translate(-2px, 0); text-shadow: 2px 0 #b8232b, -2px 0 #4a8fff; } 94% { transform: translate(2px, 0); text-shadow: -2px 0 #b8232b, 2px 0 #4a8fff; } 95% { transform: translate(0); } 96% { transform: translate(-1px, 1px); text-shadow: 1px 0 #b8232b; } 97% { transform: translate(1px, -1px); text-shadow: -1px 0 #4a8fff; } 98% { transform: translate(0); } }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes tickerPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+    @keyframes fillBar { from { width: 0; } to { width: var(--w); } }
 
-    /* ---------- Статус-бар сверху ---------- */
+    /* ---------- Статус-бар ---------- */
     .status-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 9.5px;
-      color: #6b5254;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      padding: 0 2px 10px;
-      border-bottom: 1px dashed #2a1416;
-      margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 9.5px; color: #6b5254; text-transform: uppercase; letter-spacing: 1.2px;
+      padding: 0 2px 10px; border-bottom: 1px dashed #2a1416; margin-bottom: 14px;
       animation: fadeIn 0.8s ease both;
     }
-
-    .status-bar .left, .status-bar .right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #3cc85a;
-      animation: statusDot 1.6s ease-in-out infinite;
-    }
-
-    .rec-dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #b8232b;
-      animation: recDot 1.2s steps(2, end) infinite;
-      margin-right: 4px;
-    }
-
-    .status-bar .sep {
-      color: #2a1416;
-    }
+    .status-bar .left, .status-bar .right { display: flex; align-items: center; gap: 8px; }
+    .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #3cc85a; animation: statusDot 1.6s ease-in-out infinite; }
+    .rec-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #b8232b; animation: recDot 1.2s steps(2, end) infinite; margin-right: 4px; }
+    .status-bar .sep { color: #2a1416; }
 
     /* ---------- Шапка ---------- */
-    .header {
-      text-align: center;
-      padding: 14px 0 20px;
-      border-bottom: 1px solid rgba(160, 20, 30, 0.35);
-      margin-bottom: 16px;
-      position: relative;
-      animation: fadeUp 0.6s ease both;
+    .header { text-align: center; padding: 14px 0 18px; border-bottom: 1px solid rgba(160, 20, 30, 0.35); margin-bottom: 14px; position: relative; animation: fadeUp 0.6s ease both; }
+    .stamp { display: inline-block; font-size: 10px; letter-spacing: 3px; color: #b8232b; border: 1px solid rgba(184, 35, 43, 0.55); padding: 3px 9px; border-radius: 2px; margin-bottom: 10px; text-transform: uppercase; animation: stampFlicker 6s infinite; position: relative; }
+    .stamp::before, .stamp::after { content: ""; position: absolute; top: 50%; width: 8px; height: 1px; background: rgba(184, 35, 43, 0.55); }
+    .stamp::before { left: -12px; } .stamp::after { right: -12px; }
+    h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; text-transform: uppercase; line-height: 1.15; margin-bottom: 6px; animation: glitch 8s infinite; }
+    .subtitle { font-size: 11px; color: #6b5254; text-transform: uppercase; letter-spacing: 2px; display: inline-flex; align-items: center; gap: 8px; }
+    .subtitle::before, .subtitle::after { content: ""; width: 20px; height: 1px; background: #2a1416; }
+    .cursor { display: inline-block; width: 0.5em; height: 0.9em; background: #b8232b; vertical-align: text-bottom; margin-left: 4px; animation: blink 1s step-end infinite; }
+    .ticker-marks { display: flex; justify-content: space-between; align-items: flex-end; height: 8px; margin: 8px 0 0; animation: fadeIn 1s ease 0.3s both; }
+    .ticker-marks .tick { width: 1px; height: 4px; background: #2a1416; }
+    .ticker-marks .tick.major { height: 8px; background: #48191d; }
+
+    /* ---------- Табы ---------- */
+    .tabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+      margin-bottom: 14px; background: #0c0607; border: 1px solid #2a1416;
+      border-radius: 6px; padding: 4px; position: relative;
+      animation: fadeUp 0.6s ease 0.15s both;
+    }
+    .tab {
+      background: transparent; border: none; color: #6b5254;
+      font-family: inherit; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.5px; padding: 9px 4px; border-radius: 4px;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s ease; position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .tab .idx { color: #4a3436; font-size: 8px; letter-spacing: 1px; transition: color 0.2s ease; }
+    .tab.active { background: rgba(184, 35, 43, 0.15); color: #efe6e6; box-shadow: inset 0 0 0 1px rgba(184, 35, 43, 0.45); }
+    .tab.active .idx { color: #b8232b; }
+    .tab .badge {
+      position: absolute; top: 2px; right: 2px;
+      background: #b8232b; color: #150708;
+      font-size: 7px; font-weight: 800; padding: 1px 4px;
+      border-radius: 8px; letter-spacing: 0;
     }
 
-    .stamp {
-      display: inline-block;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #b8232b;
-      border: 1px solid rgba(184, 35, 43, 0.55);
-      padding: 3px 9px;
-      border-radius: 2px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      animation: stampFlicker 6s infinite;
-      position: relative;
-    }
-    .stamp::before, .stamp::after {
-      content: "";
-      position: absolute;
-      top: 50%; width: 8px; height: 1px;
-      background: rgba(184, 35, 43, 0.55);
-    }
-    .stamp::before { left: -12px; }
-    .stamp::after  { right: -12px; }
-
-    h1 {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #efe6e6;
-      text-transform: uppercase;
-      line-height: 1.15;
-      margin-bottom: 8px;
-      animation: glitch 8s infinite;
-    }
-
-    .subtitle {
-      font-size: 11px;
-      color: #6b5254;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .subtitle::before, .subtitle::after {
-      content: "";
-      width: 20px; height: 1px;
-      background: #2a1416;
-    }
-
-    .cursor {
-      display: inline-block;
-      width: 0.5em;
-      height: 0.9em;
-      background: #b8232b;
-      vertical-align: text-bottom;
-      margin-left: 4px;
-      animation: blink 1s step-end infinite;
-    }
-
-    /* Тики-деления под шапкой */
-    .ticker-marks {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      height: 8px;
-      margin: 8px 0 0;
-      animation: fadeIn 1s ease 0.3s both;
-    }
-    .ticker-marks .tick {
-      width: 1px;
-      height: 4px;
-      background: #2a1416;
-    }
-    .ticker-marks .tick.major {
-      height: 8px;
-      background: #48191d;
-    }
+    /* ---------- Таб-контент ---------- */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* ---------- Сетка ---------- */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
 
     /* ---------- Карточки ---------- */
     .card {
-      background-color: #130a0b;
-      border: 1px solid #2a1416;
-      border-radius: 6px;
-      padding: 14px;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp 0.6s ease both;
+      background-color: #130a0b; border: 1px solid #2a1416;
+      border-radius: 6px; padding: 14px; position: relative;
+      overflow: hidden; animation: fadeUp 0.6s ease both;
       transition: border-color 0.25s ease, transform 0.2s ease;
-    }
-
-    .grid .card:nth-child(1) { animation-delay: 0.10s; }
-    .grid .card:nth-child(2) { animation-delay: 0.22s; }
-    #squad-card              { animation-delay: 0.34s; }
-    #join-card               { animation-delay: 0.46s; }
-    #list-card               { animation-delay: 0.58s; }
-
-    .card:hover { border-color: #48191d; transform: translateY(-2px); }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(184, 35, 43, 0.55), transparent);
-      animation: scanline 6s linear infinite;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .grid .card:nth-child(1)::before { animation-delay: 0s; }
-    .grid .card:nth-child(2)::before { animation-delay: 1.5s; }
-    #squad-card::before              { animation-delay: 2.5s; }
-    #join-card::before               { animation-delay: 3.5s; }
-    #list-card::before               { animation-delay: 4.5s; }
-
-    /* Уголки */
-    .card .corner-tl,
-    .card .corner-br {
-      position: absolute;
-      width: 10px; height: 10px;
-      pointer-events: none;
-    }
-    .card .corner-tl {
-      top: -1px; left: -1px;
-      border-top: 2px solid #b8232b;
-      border-left: 2px solid #b8232b;
-      border-top-left-radius: 6px;
-    }
-    .card .corner-br {
-      bottom: -1px; right: -1px;
-      border-bottom: 2px solid #b8232b;
-      border-right: 2px solid #b8232b;
-      border-bottom-right-radius: 6px;
-    }
-
-    /* Серийный номер карточки в правом верхнем углу */
-    .serial {
-      position: absolute;
-      top: 6px; right: 8px;
-      font-size: 8px;
-      color: #4a3436;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      z-index: 3;
-      opacity: 0.8;
-    }
-
-    .card h2 {
-      font-size: 12px;
-      font-weight: 700;
-      color: #efe6e6;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      position: relative;
-      z-index: 2;
-      padding-right: 44px;
-    }
-
-    .card h2 .idx {
-      color: #b8232b;
-      font-size: 10px;
-      opacity: 0.85;
-    }
-
-    .card p {
-      font-size: 12px;
-      color: #8f7f81;
       margin-bottom: 12px;
-      line-height: 1.45;
-      position: relative;
-      z-index: 2;
     }
+    .grid .card { margin-bottom: 0; }
+    .grid .card:nth-child(1) { animation-delay: 0.05s; }
+    .grid .card:nth-child(2) { animation-delay: 0.15s; }
+    .card:hover { border-color: #48191d; transform: translateY(-2px); }
+    .card::before {
+      content: ""; position: absolute; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(184, 35, 43, 0.55), transparent);
+      animation: scanline 6s linear infinite; pointer-events: none; z-index: 1;
+    }
+    .card .corner-tl, .card .corner-br { position: absolute; width: 10px; height: 10px; pointer-events: none; }
+    .card .corner-tl { top: -1px; left: -1px; border-top: 2px solid #b8232b; border-left: 2px solid #b8232b; border-top-left-radius: 6px; }
+    .card .corner-br { bottom: -1px; right: -1px; border-bottom: 2px solid #b8232b; border-right: 2px solid #b8232b; border-bottom-right-radius: 6px; }
+    .serial { position: absolute; top: 6px; right: 8px; font-size: 8px; color: #4a3436; letter-spacing: 1px; text-transform: uppercase; z-index: 3; opacity: 0.8; }
+    .card h2 {
+      font-size: 12px; font-weight: 700; color: #efe6e6; text-transform: uppercase;
+      letter-spacing: 1.2px; margin-bottom: 8px; display: flex; align-items: baseline;
+      gap: 6px; position: relative; z-index: 2; padding-right: 44px;
+    }
+    .card h2 .idx { color: #b8232b; font-size: 10px; opacity: 0.85; }
+    .card p { font-size: 12px; color: #8f7f81; margin-bottom: 12px; line-height: 1.45; position: relative; z-index: 2; }
 
     /* ---------- Кнопки ---------- */
     .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 12px 10px;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 700;
-      text-decoration: none;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: #150708;
-      background: #b8232b;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.15s ease, transform 0.1s ease;
-      -webkit-tap-highlight-color: transparent;
-      min-height: 44px;
-      position: relative;
-      z-index: 2;
-      animation: pulseGlow 2.8s ease-in-out infinite;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px 10px; font-family: inherit;
+      font-size: 12px; font-weight: 700; text-decoration: none;
+      text-align: center; text-transform: uppercase; letter-spacing: 1.2px;
+      color: #150708; background: #b8232b; border: none; border-radius: 4px;
+      cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
+      -webkit-tap-highlight-color: transparent; min-height: 44px;
+      position: relative; z-index: 2; animation: pulseGlow 2.8s ease-in-out infinite;
     }
-
-    .btn::after {
-      content: "›";
-      font-size: 16px;
-      line-height: 1;
-      opacity: 0.75;
-    }
-
+    .btn::after { content: "›"; font-size: 16px; line-height: 1; opacity: 0.75; }
     .btn:hover { background: #cf2a33; }
     .btn:active { transform: translateY(1px) scale(0.99); }
-
-    .btn.ghost {
-      background: transparent;
-      color: #d04a50;
-      border: 1px solid rgba(184, 35, 43, 0.55);
-      animation: none;
-    }
+    .btn.ghost { background: transparent; color: #d04a50; border: 1px solid rgba(184, 35, 43, 0.55); animation: none; }
     .btn.ghost::after { content: "→"; font-size: 13px; }
-    .btn.ghost:hover {
-      background: rgba(184, 35, 43, 0.10);
-      animation: pulseGlow 2.4s ease-in-out infinite;
-    }
-
-    /* Кнопка-генератор без стрелки */
+    .btn.ghost:hover { background: rgba(184, 35, 43, 0.10); animation: pulseGlow 2.4s ease-in-out infinite; }
     .btn.no-arrow::after { content: ""; }
 
-    /* ---------- Выдача отряда ---------- */
+    /* ---------- Rank box ---------- */
     #rank-box {
-      padding: 14px;
-      background: #0c0607;
-      border: 1px solid #2a1416;
-      border-radius: 4px;
-      min-height: 84px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-      animation: borderPulse 4s ease-in-out infinite;
-      overflow: hidden;
+      padding: 14px; background: #0c0607; border: 1px solid #2a1416;
+      border-radius: 4px; min-height: 84px; display: flex; flex-direction: column;
+      justify-content: center; position: relative; z-index: 2;
+      animation: borderPulse 4s ease-in-out infinite; overflow: hidden;
     }
-
-    /* Мелкие тики в углах rank-box */
-    #rank-box::before,
-    #rank-box::after {
-      content: "";
-      position: absolute;
-      width: 14px; height: 14px;
-      border-color: rgba(184, 35, 43, 0.35);
-      border-style: solid;
+    #rank-box::before, #rank-box::after {
+      content: ""; position: absolute; width: 14px; height: 14px;
+      border-color: rgba(184, 35, 43, 0.35); border-style: solid;
     }
-    #rank-box::before {
-      top: 4px; left: 4px;
-      border-width: 1px 0 0 1px;
-    }
-    #rank-box::after {
-      bottom: 4px; right: 4px;
-      border-width: 0 1px 1px 0;
-    }
-
-    #rank-box.filled {
-      animation: popIn 0.4s cubic-bezier(.2,.8,.3,1.2) both;
-    }
-
-    #rank-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: #d04a50;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 5px;
-      padding-left: 8px;
-      border-left: 2px solid #b8232b;
-    }
-
-    #rank-desc {
-      font-size: 11.5px;
-      color: #8f7f81;
-      line-height: 1.5;
-    }
-
-    .placeholder {
-      color: #4a3436;
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .placeholder::after {
-      content: "_";
-      animation: blink 1s step-end infinite;
-      color: #b8232b;
-    }
+    #rank-box::before { top: 4px; left: 4px; border-width: 1px 0 0 1px; }
+    #rank-box::after { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; }
+    #rank-box.filled { animation: popIn 0.4s cubic-bezier(.2,.8,.3,1.2) both; }
+    #rank-title { font-size: 14px; font-weight: 800; color: #d04a50; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; padding-left: 8px; border-left: 2px solid #b8232b; }
+    #rank-desc { font-size: 11.5px; color: #8f7f81; line-height: 1.5; }
+    .placeholder { color: #4a3436; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+    .placeholder::after { content: "_"; animation: blink 1s step-end infinite; color: #b8232b; }
 
     /* ---------- Сетка отрядов ---------- */
-    .squad-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-      position: relative;
-      z-index: 2;
-    }
-
+    .squad-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; position: relative; z-index: 2; }
     .squad {
-      background-color: #0c0607;
-      border: 1px solid #2a1416;
-      border-left: 2px solid #b8232b;
-      border-radius: 3px;
-      padding: 10px;
+      background-color: #0c0607; border: 1px solid #2a1416;
+      border-left: 2px solid #b8232b; border-radius: 3px; padding: 10px;
       transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-      animation: fadeIn 0.8s ease both;
-      position: relative;
+      animation: fadeIn 0.8s ease both; position: relative;
     }
+    .squad:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(184, 35, 43, 0.18); border-color: #48191d; border-left-color: #cf2a33; }
+    .squad .name { font-size: 10.5px; font-weight: 800; color: #d04a50; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; line-height: 1.3; padding-right: 18px; }
+    .squad::after { content: "●"; position: absolute; top: 8px; right: 8px; font-size: 6px; color: #b8232b; animation: tickerPulse 2.5s ease-in-out infinite; }
+    .squad .desc { font-size: 10.5px; color: #7d6a6c; line-height: 1.4; }
 
-    .squad:nth-child(1) { animation-delay: 0.70s; }
-    .squad:nth-child(2) { animation-delay: 0.80s; }
-    .squad:nth-child(3) { animation-delay: 0.90s; }
-    .squad:nth-child(4) { animation-delay: 1.00s; }
-    .squad:nth-child(5) { animation-delay: 1.10s; }
+    /* ---------- Сводка: счётчики ---------- */
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; position: relative; z-index: 2; }
+    .stat-item {
+      background: #0c0607; border: 1px solid #2a1416; border-left: 2px solid #b8232b;
+      border-radius: 3px; padding: 12px 10px; display: flex; flex-direction: column;
+      align-items: flex-start; gap: 4px;
+    }
+    .stat-num { font-size: 22px; font-weight: 800; color: #d04a50; letter-spacing: -0.5px; line-height: 1; }
+    .stat-lbl { font-size: 9px; color: #6b5254; text-transform: uppercase; letter-spacing: 1px; }
 
-    .squad:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(184, 35, 43, 0.18);
-      border-color: #48191d;
-      border-left-color: #cf2a33;
-    }
+    /* ---------- Сводка: прогресс-бары ---------- */
+    .stat { margin-bottom: 12px; position: relative; z-index: 2; }
+    .stat:last-child { margin-bottom: 0; }
+    .stat-row { display: flex; justify-content: space-between; font-size: 10.5px; color: #a8a0a1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    .stat-row span:last-child { color: #d04a50; font-weight: 700; }
+    .stat-bar { height: 5px; background: #0c0607; border: 1px solid #2a1416; border-radius: 3px; overflow: hidden; }
+    .stat-fill { height: 100%; background: linear-gradient(90deg, #48191d, #b8232b, #cf2a33); width: 0; border-radius: 3px; }
+    .tab-content.active .stat-fill { animation: fillBar 1.2s ease-out forwards; }
 
-    .squad .name {
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #d04a50;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-      line-height: 1.3;
-      padding-right: 18px;
-    }
+    /* ---------- Радиолог ---------- */
+    .radio-log { font-size: 10px; line-height: 1.7; color: #8f7f81; position: relative; z-index: 2; padding: 10px; background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; max-height: 180px; overflow-y: auto; }
+    .radio-log > div { padding: 2px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.4); }
+    .radio-log > div:last-child { border-bottom: none; }
+    .radio-log .ts { color: #4a3436; margin-right: 6px; }
+    .radio-log .who { color: #b8232b; font-weight: 700; margin-right: 4px; }
+    .radio-log .ok { color: #3cc85a; }
+    .radio-log .warn { color: #d04a50; }
 
-    /* Мини-индикатор в углу каждой карточки отряда */
-    .squad::after {
-      content: "●";
-      position: absolute;
-      top: 8px; right: 8px;
-      font-size: 6px;
-      color: #b8232b;
-      animation: tickerPulse 2.5s ease-in-out infinite;
+    /* ---------- Устав ---------- */
+    .ustav { list-style: none; position: relative; z-index: 2; }
+    .ustav li {
+      display: grid; grid-template-columns: 26px 1fr; gap: 10px;
+      padding: 10px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.6);
+      font-size: 11.5px; color: #a8a0a1; line-height: 1.5;
     }
+    .ustav li:last-child { border-bottom: none; }
+    .ustav .num { color: #b8232b; font-weight: 800; font-size: 11px; letter-spacing: 1px; }
+    .ustav b { color: #d04a50; font-weight: 700; }
 
-    .squad .desc {
-      font-size: 10.5px;
-      color: #7d6a6c;
-      line-height: 1.4;
-    }
-
-    /* ---------- Бегущая строка внизу ---------- */
-    .marquee {
-      margin-top: 20px;
-      border-top: 1px dashed #2a1416;
-      border-bottom: 1px dashed #2a1416;
-      padding: 8px 0;
-      overflow: hidden;
-      position: relative;
-      animation: fadeIn 1.2s ease 1s both;
-    }
-    .marquee::before, .marquee::after {
-      content: "";
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 30px;
-      z-index: 2;
-      pointer-events: none;
-    }
+    /* ---------- Марки ---------- */
+    .marquee { margin-top: 18px; border-top: 1px dashed #2a1416; border-bottom: 1px dashed #2a1416; padding: 8px 0; overflow: hidden; position: relative; animation: fadeIn 1.2s ease 1s both; }
+    .marquee::before, .marquee::after { content: ""; position: absolute; top: 0; bottom: 0; width: 30px; z-index: 2; pointer-events: none; }
     .marquee::before { left: 0; background: linear-gradient(90deg, #0a0506, transparent); }
-    .marquee::after  { right: 0; background: linear-gradient(270deg, #0a0506, transparent); }
-
-    .marquee-track {
-      display: flex;
-      white-space: nowrap;
-      animation: marquee 22s linear infinite;
-      width: max-content;
-    }
-    .marquee-track span {
-      font-size: 10px;
-      color: #6b5254;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      padding-right: 28px;
-    }
+    .marquee::after { right: 0; background: linear-gradient(270deg, #0a0506, transparent); }
+    .marquee-track { display: flex; white-space: nowrap; animation: marquee 22s linear infinite; width: max-content; }
+    .marquee-track span { font-size: 10px; color: #6b5254; text-transform: uppercase; letter-spacing: 2px; padding-right: 28px; }
     .marquee-track span b { color: #b8232b; font-weight: 700; }
 
     /* ---------- Дисклеймер ---------- */
-    .disclaimer {
-      font-size: 9.5px;
-      color: #4a3436;
-      text-align: center;
-      margin-top: 14px;
-      line-height: 1.6;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      animation: fadeIn 1.4s ease 1.2s both;
-      padding: 0 4px;
-    }
-    .disclaimer .coord {
-      display: block;
-      margin-top: 6px;
-      color: #2a1416;
-      font-size: 9px;
-    }
+    .disclaimer { font-size: 9.5px; color: #4a3436; text-align: center; margin-top: 14px; line-height: 1.6; letter-spacing: 1px; text-transform: uppercase; animation: fadeIn 1.4s ease 1.2s both; padding: 0 4px; }
+    .disclaimer .coord { display: block; margin-top: 6px; color: #2a1416; font-size: 9px; }
 
     /* ---------- Планшет / десктоп ---------- */
     @media (min-width: 560px) {
@@ -595,32 +259,30 @@
       h1 { font-size: 30px; }
       .card { padding: 18px; }
       .card p { font-size: 13px; }
-      .grid { gap: 14px; margin-bottom: 14px; }
+      .grid { gap: 14px; }
       .squad-grid { gap: 10px; }
       .squad { padding: 12px; }
       .squad .name { font-size: 12px; }
       .squad .desc { font-size: 11.5px; }
       .serial { font-size: 9px; }
+      .tab { font-size: 11px; padding: 10px 4px; }
+      .tab .idx { font-size: 9px; }
+      .stat-num { font-size: 26px; }
+      .ustav li { font-size: 12.5px; }
+      .radio-log { font-size: 11px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
     }
   </style>
 </head>
 <body>
   <div class="container">
 
-    <!-- Статус-бар сверху -->
+    <!-- Статус-бар -->
     <div class="status-bar">
-      <div class="left">
-        <span class="status-dot"></span>
-        <span>ONLINE</span>
-      </div>
+      <div class="left"><span class="status-dot"></span><span>ONLINE</span></div>
       <div class="right">
         <span><span class="rec-dot"></span>REC</span>
         <span class="sep">|</span>
@@ -633,85 +295,160 @@
       <span class="stamp">// SECURE CHANNEL</span>
       <h1>Штаб Мопс-Бригады<span class="cursor"></span></h1>
       <p class="subtitle">Связь · Отчёты · Рейды</p>
-
-      <!-- Тики-деления -->
       <div class="ticker-marks" id="tickerMarks"></div>
     </div>
 
-    <!-- Канал + Контракт -->
-    <div class="grid">
-      <div class="card">
-        <span class="corner-tl"></span><span class="corner-br"></span>
-        <span class="serial">SN-0x1A</span>
-        <h2><span class="idx">[01]</span> Канал MAX</h2>
-        <p>Публикуем рейды, отчёты и т.д.</p>
-        <a href="https://max.ru/join/cqxpumoGDVmDanOn3oR9ThzYHAsTUxG-N6_WG8-SMZE" class="btn" target="_blank" rel="noopener">
-          В канал
-        </a>
+    <!-- Табы -->
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="shtab"><span class="idx">01</span>Штаб</button>
+      <button class="tab" data-tab="otryady"><span class="idx">02</span>Отряды<span class="badge">17</span></button>
+      <button class="tab" data-tab="svodka"><span class="idx">03</span>Сводка</button>
+      <button class="tab" data-tab="ustav"><span class="idx">04</span>Устав</button>
+    </nav>
+
+    <!-- ===== ВКЛАДКА: ШТАБ ===== -->
+    <section class="tab-content active" id="tab-shtab">
+
+      <div class="grid">
+        <div class="card">
+          <span class="corner-tl"></span><span class="corner-br"></span>
+          <span class="serial">SN-0x1A</span>
+          <h2><span class="idx">[01]</span> Канал MAX</h2>
+          <p>Публикуем рейды, отчёты и т.д.</p>
+          <a href="https://max.ru/join/cqxpumoGDVmDanOn3oR9ThzYHAsTUxG-N6_WG8-SMZE" class="btn" target="_blank" rel="noopener">В канал</a>
+        </div>
+
+        <div class="card">
+          <span class="corner-tl"></span><span class="corner-br"></span>
+          <span class="serial">SN-0x2B</span>
+          <h2><span class="idx">[02]</span> Контракт</h2>
+          <p>Пиши — обсудим. И отговорим.</p>
+          <a href="https://max.ru/c/-81659530068092/AaIUoCT2FJQ" class="btn ghost" target="_blank" rel="noopener">Написать</a>
+        </div>
       </div>
 
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
-        <span class="serial">SN-0x2B</span>
-        <h2><span class="idx">[02]</span> Контракт</h2>
-        <p>Пиши — обсудим. И отговорим.</p>
-        <a href="https://max.ru/c/-81659530068092/AaIUoCT2FJQ" class="btn ghost" target="_blank" rel="noopener">
-          Написать
-        </a>
+        <span class="serial">SN-0x3C</span>
+        <h2><span class="idx">[03]</span> Назначение в отряд</h2>
+        <p>Нажми — система распределит тебя в один из 17 отрядов бригады.</p>
+        <button class="btn no-arrow" onclick="randomRank()">Получить назначение</button>
+        <div id="rank-box" style="margin-top: 12px;">
+          <div class="placeholder">// ожидание приказа</div>
+        </div>
       </div>
-    </div>
 
-    <!-- Генератор -->
-    <div class="card" id="join-card" style="margin-bottom: 12px;">
-      <span class="corner-tl"></span><span class="corner-br"></span>
-      <span class="serial">SN-0x3C</span>
-      <h2><span class="idx">[03]</span> Назначение в отряд</h2>
-      <p>Нажми — система распределит тебя в один из отрядов бригады.</p>
-      <button class="btn no-arrow" onclick="randomRank()">Получить назначение</button>
-      <div id="rank-box" style="margin-top: 12px;">
-        <div class="placeholder">// ожидание приказа</div>
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x4D</span>
+        <h2><span class="idx">[04]</span> Брифинг дня</h2>
+        <p style="margin-bottom: 0; font-style: italic; color: #a8a0a1; border-left: 2px solid #b8232b; padding-left: 10px;">
+          «Лучший бой — тот, на который не пришлось идти. Лучший контракт — тот, который ты не подписал».
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 0; font-size: 10px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px;">
+          — Устав Мопс-Бригады, ст. 1
+        </p>
       </div>
-    </div>
 
-    <!-- Все отряды -->
-    <div class="card" id="list-card">
-      <span class="corner-tl"></span><span class="corner-br"></span>
-      <span class="serial">SN-0x4D</span>
-      <h2><span class="idx">[04]</span> Отряды бригады</h2>
-      <div class="squad-grid">
-        <div class="squad">
-          <div class="name">Бронемопс</div>
-          <div class="desc">Водители военной техники: БТР, танки и всё, что едет и громыхает.</div>
-        </div>
-        <div class="squad">
-          <div class="name">Мопсовый десант</div>
-          <div class="desc">Отряд воздушной бомбардировки. Прибывают сверху.</div>
-        </div>
-        <div class="squad">
-          <div class="name">ЧВК «Мопс»</div>
-          <div class="desc">Операторы дронов: якудза-ямаха-шахеды, гибридные, мультикоптеры.</div>
-        </div>
-        <div class="squad">
-          <div class="name">Ориентирные мопсы</div>
-          <div class="desc">Спутниковое сопровождение. Ведут по пустой дороге.</div>
-        </div>
-        <div class="squad" style="grid-column: 1 / -1;">
-          <div class="name">Тактические мопсы</div>
-          <div class="desc">Самый сложный отряд. Идут в бой, скрываются в зданиях, работают по противнику.</div>
+    </section>
+
+    <!-- ===== ВКЛАДКА: ОТРЯДЫ ===== -->
+    <section class="tab-content" id="tab-otryady">
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x5E</span>
+        <h2><span class="idx">[01]</span> Боевой состав</h2>
+        <p>17 отрядов. Каждый со своим характером и своими странностями.</p>
+        <div class="squad-grid" id="allSquads"></div>
+      </div>
+    </section>
+
+    <!-- ===== ВКЛАДКА: СВОДКА ===== -->
+    <section class="tab-content" id="tab-svodka">
+
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x6F</span>
+        <h2><span class="idx">[01]</span> Сводка за сутки</h2>
+        <div class="stat-grid">
+          <div class="stat-item"><span class="stat-num">17</span><span class="stat-lbl">Отрядов</span></div>
+          <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Операций</span></div>
+          <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Отчётов</span></div>
+          <div class="stat-item"><span class="stat-num">1024</span><span class="stat-lbl">Мемов в архиве</span></div>
         </div>
       </div>
-    </div>
+
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x7A</span>
+        <h2><span class="idx">[02]</span> Показатели</h2>
+        <div class="stat">
+          <div class="stat-row"><span>Боеготовность</span><span>87%</span></div>
+          <div class="stat-bar"><div class="stat-fill" style="--w:87%"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-row"><span>Настроение</span><span>100%</span></div>
+          <div class="stat-bar"><div class="stat-fill" style="--w:100%"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-row"><span>Запас чая</span><span>42%</span></div>
+          <div class="stat-bar"><div class="stat-fill" style="--w:42%"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-row"><span>Уровень секретности</span><span>73%</span></div>
+          <div class="stat-bar"><div class="stat-fill" style="--w:73%"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x8B</span>
+        <h2><span class="idx">[03]</span> Радиоперехват</h2>
+        <div class="radio-log">
+          <div><span class="ts">14:32:01</span> <span class="who">ШТАБ</span>: перекличка, всем ответить</div>
+          <div><span class="ts">14:32:04</span> <span class="who">БРОНЕМОПС</span>: <span class="ok">на связи</span></div>
+          <div><span class="ts">14:32:07</span> <span class="who">МОПСОВЫЙ ДЕСАНТ</span>: <span class="ok">на связи</span></div>
+          <div><span class="ts">14:32:11</span> <span class="who">ЧВК МОПС</span>: дрон вернулся на базу</div>
+          <div><span class="ts">14:32:15</span> <span class="who">САПЁР-ОПТИМИСТ</span>: <span class="warn">всё ещё верит в лучшее</span></div>
+          <div><span class="ts">14:32:18</span> <span class="who">ТАКТИЧЕСКИЕ</span>: тишина в эфире</div>
+          <div><span class="ts">14:32:22</span> <span class="who">ШТАБ</span>: принято. отбой</div>
+          <div><span class="ts">14:32:23</span> <span class="who">СИСТЕМА</span>: <span class="ok">сеанс зашифрован</span></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===== ВКЛАДКА: УСТАВ ===== -->
+    <section class="tab-content" id="tab-ustav">
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0x9C</span>
+        <h2><span class="idx">[01]</span> Устав бригады</h2>
+        <p>Короткий свод правил, обязательный к исполнению всеми мопсами.</p>
+        <ol class="ustav">
+          <li><span class="num">01</span><span>Не стрелять первым. Не стрелять вторым. Не стрелять третьим. <b>Вообще не стрелять</b>.</span></li>
+          <li><span class="num">02</span><span>Увидел куст — это разведка. Не пугай.</span></li>
+          <li><span class="num">03</span><span>Если заблудился — ты уже <b>в разведке</b>.</span></li>
+          <li><span class="num">04</span><span>Приказ «отставить» выполняется с облегчением.</span></li>
+          <li><span class="num">05</span><span>Доклад должен быть правдой. Но <b>красивой</b>.</span></li>
+          <li><span class="num">06</span><span>Мем — тоже оружие. Не применяй во вред.</span></li>
+          <li><span class="num">07</span><span>Пришёл контракт — <b>чай уже горячий</b>. Садись, поговорим.</span></li>
+          <li><span class="num">08</span><span>Уровень секретности папок: не ниже уровня <b>вечных тайн</b>.</span></li>
+          <li><span class="num">09</span><span>Сапёр ошибается один раз. Поэтому мы <b>не торопимся</b>.</span></li>
+          <li><span class="num">10</span><span>Пункт 10 отсутствует. Он секретный.</span></li>
+        </ol>
+      </div>
+    </section>
 
     <!-- Бегущая строка -->
     <div class="marquee">
-      <div class="marquee-track" id="marquee">
+      <div class="marquee-track">
         <span><b>▲</b> Канал активен</span>
         <span><b>●</b> Пост наблюдения #3 — тишина</span>
         <span><b>▲</b> Дрон-мопс вернулся на базу</span>
         <span><b>●</b> Перекличка отрядов: OK</span>
         <span><b>▲</b> Сеанс связи: зашифрован</span>
         <span><b>●</b> Отчётов за сутки: 0</span>
-        <!-- дубль для бесшовности -->
         <span><b>▲</b> Канал активен</span>
         <span><b>●</b> Пост наблюдения #3 — тишина</span>
         <span><b>▲</b> Дрон-мопс вернулся на базу</span>
@@ -723,7 +460,7 @@
 
     <p class="disclaimer">
       Сайт-мем. Все отряды, звания и операции — вымышленные. Совпадения случайны.
-      <span class="coord">55.75°N / 37.61°E · SECTOR 04 · BUILD 2.11.26</span>
+      <span class="coord">55.75°N / 37.61°E · SECTOR 04 · BUILD 2.11.26 · UNIT · MOPSSQUAD</span>
     </p>
 
   </div>
@@ -733,24 +470,45 @@
       { title: "Бронемопс", desc: "Водители военной техники: БТР, танки и всё, что едет и громыхает." },
       { title: "Мопсовый десант", desc: "Отряд воздушной бомбардировки. Прибывают сверху, уходят по-английски." },
       { title: "ЧВК «Мопс»", desc: "Операторы дронов: якудза-ямаха-шахеды, гибридные самолётного типа, мультикоптеры." },
-      { title: "Ориентирные мопсы", desc: "Группа спутникового сопровождения. Ведут своих по пустой дороге, где никого нет." },
-      { title: "Тактические мопсы", desc: "Самый сложный отряд. Идут в бой, скрываются в зданиях, работают по противнику." }
+      { title: "Ориентирные мопсы", desc: "Спутниковое сопровождение. Ведут своих по пустой дороге, где никого нет." },
+      { title: "Тактические мопсы", desc: "Самый сложный отряд. Идут в бой, скрываются в зданиях, работают по противнику." },
+      { title: "Мопсо-факел", desc: "Огнемётчик. Один выдох — и противник узнаёт, где находится ад." },
+      { title: "Сапёр-оптимист", desc: "Ошибается только один раз — но всегда верит в лучшее." },
+      { title: "Доставщик горячих приветов", desc: "Артиллерист-миномётчик. Приветы приходят без предупреждения." },
+      { title: "Глушитель чужих фантазий", desc: "Специалист РЭБ. Ломает чужие планы ещё до того, как их придумали." },
+      { title: "Человек-невидимка / Кустовой ниндзя", desc: "Разведчик. Есть куст — есть человек. Нет куста — тоже есть." },
+      { title: "Хранитель секретных папок и вечных тайн", desc: "Начальник секретной части. Знает всё, но молчит как партизан." },
+      { title: "Штурмовик", desc: "Лоболом. Первопроходец в чужой огород. Дружинник без тормозов." },
+      { title: "Гранатомётчик / Артиллерист", desc: "Камнемётчик. Бог огня и дыма. Гостинец-посылатель." },
+      { title: "Пулемётчик", desc: "Сеятель гороха. Громобой. Ручной Змей Горыныч." },
+      { title: "Снайпер", desc: "Дальнобойный глаз. Леший с пищалью. Ловец белок." },
+      { title: "Начальник разведки", desc: "Главный по кустам. Ночной соглядатай." },
+      { title: "Штабной офицер", desc: "Берестяной мудрец. Писарь-переписчик. Вечно копается в бумагах и картах." }
     ];
 
-    let lastIndex = -1;
+    // ----- Рендер всех отрядов во вкладке «Отряды» -----
+    (function renderAllSquads() {
+      const wrap = document.getElementById('allSquads');
+      squads.forEach((s, i) => {
+        const el = document.createElement('div');
+        el.className = 'squad';
+        if (i === squads.length - 1) el.style.gridColumn = '1 / -1';
+        el.innerHTML = '<div class="name">' + s.title + '</div><div class="desc">' + s.desc + '</div>';
+        wrap.appendChild(el);
+      });
+    })();
 
+    // ----- Генератор -----
+    let lastIndex = -1;
     function randomRank() {
       const box = document.getElementById('rank-box');
       let i;
       do { i = Math.floor(Math.random() * squads.length); }
       while (i === lastIndex && squads.length > 1);
       lastIndex = i;
-
       const squad = squads[i];
-
       box.classList.remove('filled');
       box.innerHTML = '<div class="placeholder">// обработка запроса</div>';
-
       setTimeout(() => {
         box.innerHTML =
           '<div id="rank-title">' + squad.title + '</div>' +
@@ -759,7 +517,18 @@
       }, 420);
     }
 
-    // Часы
+    // ----- Табы -----
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const target = document.getElementById('tab-' + t.dataset.tab);
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // ----- Часы -----
     function updateClock() {
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
@@ -769,7 +538,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Тики-деления в шапке
+    // ----- Тики в шапке -----
     (function buildTicks() {
       const wrap = document.getElementById('tickerMarks');
       const count = 32;
