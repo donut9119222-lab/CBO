@@ -26,24 +26,16 @@
     }
 
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
+      content: ""; position: fixed; inset: 0;
       background-image: radial-gradient(rgba(184, 35, 43, 0.09) 1px, transparent 1px);
-      background-size: 22px 22px;
-      pointer-events: none;
-      z-index: 0;
+      background-size: 22px 22px; pointer-events: none; z-index: 0;
       mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
       -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
     }
-
     body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
+      content: ""; position: fixed; inset: 0;
       background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
 
     .container { max-width: 640px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
@@ -63,6 +55,10 @@
     @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
     @keyframes tickerPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
     @keyframes fillBar { from { width: 0; } to { width: var(--w); } }
+    @keyframes unitPulse { 0%, 100% { r: 4; opacity: 1; } 50% { r: 5.5; opacity: 0.6; } }
+    @keyframes ringPulse { 0% { r: 4; opacity: 0.7; } 100% { r: 14; opacity: 0; } }
+    @keyframes typingDot { 0%, 60%, 100% { opacity: 0.2; } 30% { opacity: 1; } }
+    @keyframes newLine { 0% { background: rgba(184, 35, 43, 0.25); } 100% { background: transparent; } }
 
     /* ---------- Статус-бар ---------- */
     .status-bar {
@@ -91,15 +87,15 @@
 
     /* ---------- Табы ---------- */
     .tabs {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
       margin-bottom: 14px; background: #0c0607; border: 1px solid #2a1416;
       border-radius: 6px; padding: 4px; position: relative;
       animation: fadeUp 0.6s ease 0.15s both;
     }
     .tab {
       background: transparent; border: none; color: #6b5254;
-      font-family: inherit; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 0.5px; padding: 9px 4px; border-radius: 4px;
+      font-family: inherit; font-size: 9px; text-transform: uppercase;
+      letter-spacing: 0.3px; padding: 9px 2px; border-radius: 4px;
       cursor: pointer; -webkit-tap-highlight-color: transparent;
       transition: all 0.2s ease; position: relative;
       display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -148,6 +144,11 @@
       gap: 6px; position: relative; z-index: 2; padding-right: 44px;
     }
     .card h2 .idx { color: #b8232b; font-size: 10px; opacity: 0.85; }
+    .card h2 .led {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #3cc85a; margin-left: auto; animation: statusDot 1.4s ease-in-out infinite;
+      box-shadow: 0 0 6px rgba(60, 200, 90, 0.8);
+    }
     .card p { font-size: 12px; color: #8f7f81; margin-bottom: 12px; line-height: 1.45; position: relative; z-index: 2; }
 
     /* ---------- Кнопки ---------- */
@@ -201,17 +202,11 @@
     .squad::after { content: "●"; position: absolute; top: 8px; right: 8px; font-size: 6px; color: #b8232b; animation: tickerPulse 2.5s ease-in-out infinite; }
     .squad .desc { font-size: 10.5px; color: #7d6a6c; line-height: 1.4; }
 
-    /* ---------- Сводка: счётчики ---------- */
+    /* ---------- Сводка ---------- */
     .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; position: relative; z-index: 2; }
-    .stat-item {
-      background: #0c0607; border: 1px solid #2a1416; border-left: 2px solid #b8232b;
-      border-radius: 3px; padding: 12px 10px; display: flex; flex-direction: column;
-      align-items: flex-start; gap: 4px;
-    }
+    .stat-item { background: #0c0607; border: 1px solid #2a1416; border-left: 2px solid #b8232b; border-radius: 3px; padding: 12px 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
     .stat-num { font-size: 22px; font-weight: 800; color: #d04a50; letter-spacing: -0.5px; line-height: 1; }
     .stat-lbl { font-size: 9px; color: #6b5254; text-transform: uppercase; letter-spacing: 1px; }
-
-    /* ---------- Сводка: прогресс-бары ---------- */
     .stat { margin-bottom: 12px; position: relative; z-index: 2; }
     .stat:last-child { margin-bottom: 0; }
     .stat-row { display: flex; justify-content: space-between; font-size: 10.5px; color: #a8a0a1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
@@ -220,25 +215,87 @@
     .stat-fill { height: 100%; background: linear-gradient(90deg, #48191d, #b8232b, #cf2a33); width: 0; border-radius: 3px; }
     .tab-content.active .stat-fill { animation: fillBar 1.2s ease-out forwards; }
 
-    /* ---------- Радиолог ---------- */
-    .radio-log { font-size: 10px; line-height: 1.7; color: #8f7f81; position: relative; z-index: 2; padding: 10px; background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; max-height: 180px; overflow-y: auto; }
+    /* ---------- Радиолог (живой) ---------- */
+    .radio-log {
+      font-size: 10px; line-height: 1.7; color: #8f7f81;
+      position: relative; z-index: 2; padding: 10px;
+      background: #0c0607; border: 1px solid #2a1416; border-radius: 4px;
+      height: 220px; overflow-y: auto; scroll-behavior: smooth;
+    }
+    .radio-log::-webkit-scrollbar { width: 4px; }
+    .radio-log::-webkit-scrollbar-thumb { background: #48191d; border-radius: 4px; }
     .radio-log > div { padding: 2px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.4); }
     .radio-log > div:last-child { border-bottom: none; }
+    .radio-log > div.new { animation: newLine 1.5s ease-out; }
     .radio-log .ts { color: #4a3436; margin-right: 6px; }
     .radio-log .who { color: #b8232b; font-weight: 700; margin-right: 4px; }
     .radio-log .ok { color: #3cc85a; }
     .radio-log .warn { color: #d04a50; }
+    .typing { padding: 6px 0; font-size: 10px; color: #6b5254; }
+    .typing .dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: #b8232b; margin-left: 2px; animation: typingDot 1.2s ease-in-out infinite; }
+    .typing .dot:nth-child(2) { animation-delay: 0.15s; }
+    .typing .dot:nth-child(3) { animation-delay: 0.3s; }
 
     /* ---------- Устав ---------- */
     .ustav { list-style: none; position: relative; z-index: 2; }
-    .ustav li {
-      display: grid; grid-template-columns: 26px 1fr; gap: 10px;
-      padding: 10px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.6);
-      font-size: 11.5px; color: #a8a0a1; line-height: 1.5;
-    }
+    .ustav li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.6); font-size: 11.5px; color: #a8a0a1; line-height: 1.5; }
     .ustav li:last-child { border-bottom: none; }
     .ustav .num { color: #b8232b; font-weight: 800; font-size: 11px; letter-spacing: 1px; }
     .ustav b { color: #d04a50; font-weight: 700; }
+
+    /* ---------- КАРТА: тактическая ---------- */
+    .tactical-map {
+      position: relative; z-index: 2;
+      background: #0a0506; border: 1px solid #2a1416; border-radius: 4px;
+      overflow: hidden;
+    }
+    .tactical-map svg { display: block; width: 100%; height: auto; }
+    .unit-dot { animation: unitPulse 2s ease-in-out infinite; transform-origin: center; }
+    .pulse-ring { animation: ringPulse 2s ease-out infinite; transform-origin: center; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
+      font-size: 9px; color: #6b5254; text-transform: uppercase; letter-spacing: 1px;
+      position: relative; z-index: 2;
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .map-legend .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+    .map-legend .swatch.red { background: #b8232b; box-shadow: 0 0 6px rgba(184, 35, 43, 0.7); }
+    .map-legend .swatch.dark { background: #48191d; }
+    .map-legend .swatch.bld { width: 10px; height: 10px; border-radius: 0; border: 1px dashed #48191d; background: transparent; }
+    .map-meta {
+      display: flex; justify-content: space-between; font-size: 9px; color: #4a3436;
+      text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;
+      position: relative; z-index: 2;
+    }
+
+    /* ---------- КАРТА: штаб ---------- */
+    .hq-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+      position: relative; z-index: 2;
+    }
+    .hq-room {
+      background: #0c0607; border: 1px solid #2a1416; border-radius: 4px;
+      padding: 10px 8px; position: relative; overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .hq-room:hover { border-color: #48191d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184, 35, 43, 0.15); }
+    .hq-room::before {
+      content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+      background: #b8232b;
+    }
+    .hq-room.locked::before { background: #2a1416; }
+    .hq-room.locked { opacity: 0.55; }
+    .hq-num { font-size: 8px; color: #4a3436; letter-spacing: 1px; margin-bottom: 3px; }
+    .hq-name { font-size: 10.5px; font-weight: 800; color: #d04a50; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.2; margin-bottom: 4px; }
+    .hq-status {
+      font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+      display: inline-block; padding: 1px 5px; border-radius: 2px;
+      border: 1px solid #2a1416; color: #6b5254;
+    }
+    .hq-status.active { color: #3cc85a; border-color: rgba(60, 200, 90, 0.4); }
+    .hq-status.busy { color: #d04a50; border-color: rgba(208, 74, 80, 0.4); }
+    .hq-status.locked { color: #6b5254; border-color: #2a1416; }
+    .hq-status.tea { color: #e2a542; border-color: rgba(226, 165, 66, 0.4); }
 
     /* ---------- Марки ---------- */
     .marquee { margin-top: 18px; border-top: 1px dashed #2a1416; border-bottom: 1px dashed #2a1416; padding: 8px 0; overflow: hidden; position: relative; animation: fadeIn 1.2s ease 1s both; }
@@ -269,7 +326,9 @@
       .tab .idx { font-size: 9px; }
       .stat-num { font-size: 26px; }
       .ustav li { font-size: 12.5px; }
-      .radio-log { font-size: 11px; }
+      .radio-log { font-size: 11px; height: 260px; }
+      .hq-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .hq-name { font-size: 11px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -280,7 +339,6 @@
 <body>
   <div class="container">
 
-    <!-- Статус-бар -->
     <div class="status-bar">
       <div class="left"><span class="status-dot"></span><span>ONLINE</span></div>
       <div class="right">
@@ -290,7 +348,6 @@
       </div>
     </div>
 
-    <!-- Шапка -->
     <div class="header">
       <span class="stamp">// SECURE CHANNEL</span>
       <h1>Штаб Мопс-Бригады<span class="cursor"></span></h1>
@@ -298,17 +355,16 @@
       <div class="ticker-marks" id="tickerMarks"></div>
     </div>
 
-    <!-- Табы -->
     <nav class="tabs" id="tabs">
       <button class="tab active" data-tab="shtab"><span class="idx">01</span>Штаб</button>
       <button class="tab" data-tab="otryady"><span class="idx">02</span>Отряды<span class="badge">17</span></button>
       <button class="tab" data-tab="svodka"><span class="idx">03</span>Сводка</button>
-      <button class="tab" data-tab="ustav"><span class="idx">04</span>Устав</button>
+      <button class="tab" data-tab="karta"><span class="idx">04</span>Сектор</button>
+      <button class="tab" data-tab="ustav"><span class="idx">05</span>Устав</button>
     </nav>
 
-    <!-- ===== ВКЛАДКА: ШТАБ ===== -->
+    <!-- ===== ШТАБ ===== -->
     <section class="tab-content active" id="tab-shtab">
-
       <div class="grid">
         <div class="card">
           <span class="corner-tl"></span><span class="corner-br"></span>
@@ -317,7 +373,6 @@
           <p>Публикуем рейды, отчёты и т.д.</p>
           <a href="https://max.ru/join/cqxpumoGDVmDanOn3oR9ThzYHAsTUxG-N6_WG8-SMZE" class="btn" target="_blank" rel="noopener">В канал</a>
         </div>
-
         <div class="card">
           <span class="corner-tl"></span><span class="corner-br"></span>
           <span class="serial">SN-0x2B</span>
@@ -326,7 +381,6 @@
           <a href="https://max.ru/c/-81659530068092/AaIUoCT2FJQ" class="btn ghost" target="_blank" rel="noopener">Написать</a>
         </div>
       </div>
-
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
         <span class="serial">SN-0x3C</span>
@@ -337,7 +391,6 @@
           <div class="placeholder">// ожидание приказа</div>
         </div>
       </div>
-
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
         <span class="serial">SN-0x4D</span>
@@ -349,10 +402,9 @@
           — Устав Мопс-Бригады, ст. 1
         </p>
       </div>
-
     </section>
 
-    <!-- ===== ВКЛАДКА: ОТРЯДЫ ===== -->
+    <!-- ===== ОТРЯДЫ ===== -->
     <section class="tab-content" id="tab-otryady">
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
@@ -363,9 +415,8 @@
       </div>
     </section>
 
-    <!-- ===== ВКЛАДКА: СВОДКА ===== -->
+    <!-- ===== СВОДКА ===== -->
     <section class="tab-content" id="tab-svodka">
-
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
         <span class="serial">SN-0x6F</span>
@@ -377,7 +428,6 @@
           <div class="stat-item"><span class="stat-num">1024</span><span class="stat-lbl">Мемов в архиве</span></div>
         </div>
       </div>
-
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
         <span class="serial">SN-0x7A</span>
@@ -399,26 +449,170 @@
           <div class="stat-bar"><div class="stat-fill" style="--w:73%"></div></div>
         </div>
       </div>
-
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
         <span class="serial">SN-0x8B</span>
-        <h2><span class="idx">[03]</span> Радиоперехват</h2>
-        <div class="radio-log">
-          <div><span class="ts">14:32:01</span> <span class="who">ШТАБ</span>: перекличка, всем ответить</div>
-          <div><span class="ts">14:32:04</span> <span class="who">БРОНЕМОПС</span>: <span class="ok">на связи</span></div>
-          <div><span class="ts">14:32:07</span> <span class="who">МОПСОВЫЙ ДЕСАНТ</span>: <span class="ok">на связи</span></div>
-          <div><span class="ts">14:32:11</span> <span class="who">ЧВК МОПС</span>: дрон вернулся на базу</div>
-          <div><span class="ts">14:32:15</span> <span class="who">САПЁР-ОПТИМИСТ</span>: <span class="warn">всё ещё верит в лучшее</span></div>
-          <div><span class="ts">14:32:18</span> <span class="who">ТАКТИЧЕСКИЕ</span>: тишина в эфире</div>
-          <div><span class="ts">14:32:22</span> <span class="who">ШТАБ</span>: принято. отбой</div>
-          <div><span class="ts">14:32:23</span> <span class="who">СИСТЕМА</span>: <span class="ok">сеанс зашифрован</span></div>
+        <h2><span class="idx">[03]</span> Радиоперехват <span class="led"></span></h2>
+        <p style="margin-bottom: 10px; font-size: 10px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px;">// прямой эфир · автообновление</p>
+        <div class="radio-log" id="radioLog"></div>
+      </div>
+    </section>
+
+    <!-- ===== СЕКТОР (КАРТА) ===== -->
+    <section class="tab-content" id="tab-karta">
+
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0xA1</span>
+        <h2><span class="idx">[01]</span> Тактическая карта</h2>
+        <p>Сектор 04. Наблюдаем, фиксируем, не вмешиваемся.</p>
+
+        <div class="tactical-map">
+          <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="gridSm" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2a1416" stroke-width="0.5"/>
+              </pattern>
+              <pattern id="gridLg" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#48191d" stroke-width="0.9"/>
+              </pattern>
+              <radialGradient id="mapVignette" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stop-color="rgba(184,35,43,0.06)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,0.6)"/>
+              </radialGradient>
+            </defs>
+
+            <rect width="400" height="260" fill="#0a0506"/>
+            <rect width="400" height="260" fill="url(#gridSm)"/>
+            <rect width="400" height="260" fill="url(#gridLg)"/>
+            <rect width="400" height="260" fill="url(#mapVignette)"/>
+
+            <!-- Здания -->
+            <rect x="70" y="60" width="70" height="46" fill="rgba(184,35,43,0.05)" stroke="#48191d" stroke-dasharray="2 3"/>
+            <text x="105" y="86" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">СКЛАД</text>
+
+            <rect x="230" y="55" width="90" height="55" fill="rgba(184,35,43,0.05)" stroke="#48191d" stroke-dasharray="2 3"/>
+            <text x="275" y="86" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">АНГАР</text>
+
+            <rect x="160" y="150" width="80" height="60" fill="rgba(184,35,43,0.05)" stroke="#48191d" stroke-dasharray="2 3"/>
+            <text x="200" y="184" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">БЛОК-ПОСТ</text>
+
+            <rect x="300" y="165" width="70" height="55" fill="rgba(184,35,43,0.05)" stroke="#48191d" stroke-dasharray="2 3"/>
+            <text x="335" y="195" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">КУСТЫ</text>
+
+            <!-- Дороги -->
+            <line x1="0" y1="130" x2="400" y2="130" stroke="#48191d" stroke-width="0.8" stroke-dasharray="4 4"/>
+            <line x1="200" y1="0" x2="200" y2="260" stroke="#48191d" stroke-width="0.8" stroke-dasharray="4 4"/>
+
+            <!-- Противники (X) -->
+            <g stroke="#6b5254" stroke-width="1.5" opacity="0.7">
+              <line x1="315" y1="60" x2="325" y2="70"/>
+              <line x1="325" y1="60" x2="315" y2="70"/>
+              <line x1="120" y1="190" x2="130" y2="200"/>
+              <line x1="130" y1="190" x2="120" y2="200"/>
+            </g>
+
+            <!-- Отряды -->
+            <g>
+              <circle cx="55" cy="90" r="4" fill="#b8232b" class="unit-dot"/>
+              <circle cx="55" cy="90" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
+              <text x="65" y="93" font-size="6" fill="#d04a50" letter-spacing="0.5">БРОНЕМОПС</text>
+            </g>
+            <g>
+              <circle cx="270" cy="35" r="4" fill="#b8232b" class="unit-dot"/>
+              <circle cx="270" cy="35" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
+              <text x="280" y="38" font-size="6" fill="#d04a50" letter-spacing="0.5">МОПСОВЫЙ ДЕСАНТ</text>
+            </g>
+            <g>
+              <circle cx="200" cy="125" r="4" fill="#b8232b" class="unit-dot"/>
+              <circle cx="200" cy="125" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
+              <text x="210" y="128" font-size="6" fill="#d04a50" letter-spacing="0.5">ЧВК МОПС</text>
+            </g>
+            <g>
+              <circle cx="340" cy="225" r="4" fill="#b8232b" class="unit-dot"/>
+              <circle cx="340" cy="225" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
+              <text x="270" y="240" font-size="6" fill="#d04a50" letter-spacing="0.5">ТАКТИЧЕСКИЕ</text>
+            </g>
+            <g>
+              <circle cx="80" cy="210" r="4" fill="#b8232b" class="unit-dot"/>
+              <circle cx="80" cy="210" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
+              <text x="90" y="213" font-size="6" fill="#d04a50" letter-spacing="0.5">ОРИЕНТИРНЫЕ</text>
+            </g>
+
+            <!-- Метка штаба -->
+            <g>
+              <circle cx="30" cy="235" r="5" fill="none" stroke="#3cc85a" stroke-width="1" opacity="0.8"/>
+              <circle cx="30" cy="235" r="2" fill="#3cc85a"/>
+              <text x="40" y="238" font-size="6" fill="#3cc85a" letter-spacing="0.5">ШТАБ</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="map-legend">
+          <span><span class="swatch red"></span>Наши отряды</span>
+          <span><span class="swatch dark"></span>Противник</span>
+          <span><span class="swatch bld"></span>Объект</span>
+        </div>
+        <div class="map-meta">
+          <span>SECTOR 04</span>
+          <span>55.75°N / 37.61°E</span>
+          <span>SCALE 1:5000</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="corner-tl"></span><span class="corner-br"></span>
+        <span class="serial">SN-0xA2</span>
+        <h2><span class="idx">[02]</span> План штаба</h2>
+        <p>Восемь помещений. Все двери — с этой стороны.</p>
+
+        <div class="hq-grid">
+          <div class="hq-room">
+            <div class="hq-num">01</div>
+            <div class="hq-name">Оперативный зал</div>
+            <div class="hq-status active">ACTIVE</div>
+          </div>
+          <div class="hq-room">
+            <div class="hq-num">02</div>
+            <div class="hq-name">Серверная</div>
+            <div class="hq-status active">ONLINE</div>
+          </div>
+          <div class="hq-room">
+            <div class="hq-num">03</div>
+            <div class="hq-name">Кухня</div>
+            <div class="hq-status tea">ЧАЙ ГОРЯЧИЙ</div>
+          </div>
+          <div class="hq-room">
+            <div class="hq-num">04</div>
+            <div class="hq-name">Радиорубка</div>
+            <div class="hq-status active">В ЭФИРЕ</div>
+          </div>
+          <div class="hq-room">
+            <div class="hq-num">05</div>
+            <div class="hq-name">Переговорная</div>
+            <div class="hq-status busy">ЖДЁТ ГОСТЕЙ</div>
+          </div>
+          <div class="hq-room locked">
+            <div class="hq-num">06</div>
+            <div class="hq-name">Секретная часть</div>
+            <div class="hq-status locked">СЕКРЕТНО</div>
+          </div>
+          <div class="hq-room locked">
+            <div class="hq-num">07</div>
+            <div class="hq-name">Арсенал мемов</div>
+            <div class="hq-status locked">ЗАКРЫТ</div>
+          </div>
+          <div class="hq-room">
+            <div class="hq-num">08</div>
+            <div class="hq-name">Склад</div>
+            <div class="hq-status">ПУСТО</div>
+          </div>
         </div>
       </div>
 
     </section>
 
-    <!-- ===== ВКЛАДКА: УСТАВ ===== -->
+    <!-- ===== УСТАВ ===== -->
     <section class="tab-content" id="tab-ustav">
       <div class="card">
         <span class="corner-tl"></span><span class="corner-br"></span>
@@ -466,6 +660,7 @@
   </div>
 
   <script>
+    // ================ ОТРЯДЫ ================
     const squads = [
       { title: "Бронемопс", desc: "Водители военной техники: БТР, танки и всё, что едет и громыхает." },
       { title: "Мопсовый десант", desc: "Отряд воздушной бомбардировки. Прибывают сверху, уходят по-английски." },
@@ -486,7 +681,6 @@
       { title: "Штабной офицер", desc: "Берестяной мудрец. Писарь-переписчик. Вечно копается в бумагах и картах." }
     ];
 
-    // ----- Рендер всех отрядов во вкладке «Отряды» -----
     (function renderAllSquads() {
       const wrap = document.getElementById('allSquads');
       squads.forEach((s, i) => {
@@ -498,7 +692,6 @@
       });
     })();
 
-    // ----- Генератор -----
     let lastIndex = -1;
     function randomRank() {
       const box = document.getElementById('rank-box');
@@ -517,7 +710,7 @@
       }, 420);
     }
 
-    // ----- Табы -----
+    // ================ ТАБЫ ================
     document.querySelectorAll('.tab').forEach(t => {
       t.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -528,7 +721,7 @@
       });
     });
 
-    // ----- Часы -----
+    // ================ ЧАСЫ ================
     function updateClock() {
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
@@ -538,16 +731,111 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ----- Тики в шапке -----
+    // ================ ТИКИ ================
     (function buildTicks() {
       const wrap = document.getElementById('tickerMarks');
-      const count = 32;
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < 32; i++) {
         const t = document.createElement('span');
         t.className = 'tick' + (i % 8 === 0 ? ' major' : '');
         wrap.appendChild(t);
       }
     })();
+
+    // ================ ЖИВОЙ РАДИОПЕРЕХВАТ ================
+    const radioPool = [
+      { who: "ШТАБ", text: "перекличка, всем ответить" },
+      { who: "БРОНЕМОПС", text: '<span class="ok">на связи</span>' },
+      { who: "МОПСОВЫЙ ДЕСАНТ", text: '<span class="ok">на связи, готовы к вылету</span>' },
+      { who: "ЧВК МОПС", text: "дрон вернулся на базу. без потерь" },
+      { who: "САПЁР-ОПТИМИСТ", text: '<span class="warn">всё ещё верит в лучшее</span>' },
+      { who: "ТАКТИЧЕСКИЕ", text: "тишина в эфире. работаем" },
+      { who: "ГЛУШИТЕЛЬ", text: "чей-то вайфай заглушён. на всякий" },
+      { who: "КУСТОВОЙ НИНДЗЯ", text: "я в кусте. всё вижу. ничего не говорю" },
+      { who: "СНАЙПЕР", text: "белка замечена. держу на прицеле" },
+      { who: "ПУЛЕМЁТЧИК", text: "горох готов к посеву" },
+      { who: "ГРАНАТОМЁТЧИК", text: "гостинцы упакованы" },
+      { who: "МОПСО-ФАКЕЛ", text: "спички на месте" },
+      { who: "ДОСТАВЩИК ПРИВЕТОВ", text: "приветы горячие, доставка мгновенная" },
+      { who: "ХРАНИТЕЛЬ ТАЙН", text: "папки в сейфе. тайны при мне" },
+      { who: "ШТАБНОЙ ОФИЦЕР", text: "карта найдена. она была под чашкой" },
+      { who: "НАЧАЛЬНИК РАЗВЕДКИ", text: "главный по кустам на месте" },
+      { who: "ШТУРМОВИК", text: "без тормозов. но с сердцем" },
+      { who: "КУХНЯ", text: "чайник закипел. повторяю: чайник закипел" },
+      { who: "ШТАБ", text: "всем тишина. гость в переговорке" },
+      { who: "СИСТЕМА", text: '<span class="ok">сеанс зашифрован</span>' },
+      { who: "ШТАБ", text: "кто оставил кружку в серверной?" },
+      { who: "СЕРВЕРНАЯ", text: "температура растёт. не критично. пока" },
+      { who: "ОРИЕНТИРНЫЕ", text: "дорога пуста. ведём" },
+      { who: "БРОНЕМОПС", text: "двигатель прогрелся. едим дальше" },
+      { who: "ШТАБ", text: "отбой через 10. чай не остыл" },
+      { who: "СИСТЕМА", text: "обнаружен мем в эфире. пропущен" },
+      { who: "ТАКТИЧЕСКИЕ", text: "позиция занята. окна открыты" },
+      { who: "ШТАБ", text: "приказ: не воевать. выполняется" },
+      { who: "САПЁР-ОПТИМИСТ", text: "обрезал красный. всё хорошо. верю" },
+      { who: "КУСТОВОЙ НИНДЗЯ", text: "куст доволен. продолжаем" },
+      { who: "МОПСОВЫЙ ДЕСАНТ", text: "прибыли сверху. уходим по-английски" },
+      { who: "ЧВК МОПС", text: "дрон-ямаха ушёл в горизонт" },
+      { who: "СНАЙПЕР", text: "дыхание ровное. чай не пролит" },
+      { who: "ШТАБ", text: "напоминание: мы никого не звали" },
+      { who: "СИСТЕМА", text: '<span class="ok">канал стабилен</span>' }
+    ];
+
+    const radioLog = document.getElementById('radioLog');
+    let radioIdx = 0;
+
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function nowTs() {
+      const d = new Date();
+      return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+    }
+
+    function pushRadio(entry) {
+      // убираем индикатор набора, если он есть
+      const oldTyping = radioLog.querySelector('.typing');
+      if (oldTyping) oldTyping.remove();
+
+      const div = document.createElement('div');
+      div.className = 'new';
+      div.innerHTML =
+        '<span class="ts">' + nowTs() + '</span> ' +
+        '<span class="who">' + entry.who + '</span>: ' + entry.text;
+      radioLog.appendChild(div);
+
+      while (radioLog.children.length > 40) {
+        radioLog.removeChild(radioLog.firstChild);
+      }
+      radioLog.scrollTop = radioLog.scrollHeight;
+    }
+
+    function showTyping() {
+      const oldTyping = radioLog.querySelector('.typing');
+      if (oldTyping) oldTyping.remove();
+      const typing = document.createElement('div');
+      typing.className = 'typing';
+      typing.innerHTML = '// печатает<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+      radioLog.appendChild(typing);
+      radioLog.scrollTop = radioLog.scrollHeight;
+    }
+
+    // стартовые сообщения
+    for (let i = 0; i < 4; i++) {
+      pushRadio(radioPool[radioIdx % radioPool.length]);
+      radioIdx++;
+    }
+
+    // рекурсивный таймер: случайный интервал 2.5-5.5с
+    function scheduleNext() {
+      const delay = 2500 + Math.random() * 3000;
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          pushRadio(radioPool[radioIdx % radioPool.length]);
+          radioIdx++;
+          scheduleNext();
+        }, 700 + Math.random() * 500);
+      }, delay);
+    }
+    scheduleNext();
   </script>
 </body>
 </html>
