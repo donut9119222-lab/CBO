@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0506">
 <title>ШТАБ МОПС-БРИГАДЫ</title>
 <style>
@@ -31,6 +31,7 @@ body::after {
   background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
   pointer-events: none; z-index: 0;
 }
+body.game-active { overflow: hidden; }
 .container { max-width: 640px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
 
 @keyframes fadeUp { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -53,23 +54,21 @@ body::after {
 @keyframes newLine { 0% { background: rgba(184, 35, 43, 0.25); } 100% { background: transparent; } }
 @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes scanLed { 0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(184, 35, 43, 0.9); } 50% { opacity: 0.35; box-shadow: 0 0 2px rgba(184, 35, 43, 0.4); } }
-@keyframes hotspot { 0%, 100% { opacity: 0.2; r: 18; } 50% { opacity: 0.6; r: 26; } }
 @keyframes trainFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 
 .status-bar {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 9.5px; color: #6b5254; text-transform: uppercase; letter-spacing: 1.2px;
   padding: 0 2px 10px; border-bottom: 1px dashed #2a1416; margin-bottom: 14px;
-  animation: fadeIn 0.8s ease both; padding-right: 96px;
+  animation: fadeIn 0.8s ease both; padding-right: 100px;
 }
 .status-bar .left, .status-bar .right { display: flex; align-items: center; gap: 8px; }
 .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #3cc85a; animation: statusDot 1.6s ease-in-out infinite; }
 .rec-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #b8232b; animation: recDot 1.2s steps(2, end) infinite; margin-right: 4px; }
 .status-bar .sep { color: #2a1416; }
 
-/* Кнопка Тренировка */
 .train-btn {
-  position: fixed; top: 10px; right: 10px; z-index: 100;
+  position: fixed; top: calc(8px + env(safe-area-inset-top)); right: calc(8px + env(safe-area-inset-right)); z-index: 100;
   background: #b8232b; color: #150708;
   border: 2px solid #48191d; border-radius: 6px;
   padding: 7px 10px;
@@ -109,79 +108,49 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
   transition: all 0.2s ease; position: relative;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
-.tab .idx { color: #4a3436; font-size: 8px; letter-spacing: 1px; transition: color 0.2s ease; }
+.tab .idx { color: #4a3436; font-size: 8px; letter-spacing: 1px; }
 .tab.active { background: rgba(184, 35, 43, 0.15); color: #efe6e6; box-shadow: inset 0 0 0 1px rgba(184, 35, 43, 0.45); }
 .tab.active .idx { color: #b8232b; }
-.tab .badge {
-  position: absolute; top: 2px; right: 2px;
-  background: #b8232b; color: #150708;
-  font-size: 7px; font-weight: 800; padding: 1px 4px;
-  border-radius: 8px; letter-spacing: 0;
-}
+.tab .badge { position: absolute; top: 2px; right: 2px; background: #b8232b; color: #150708; font-size: 7px; font-weight: 800; padding: 1px 4px; border-radius: 8px; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
-
 .card {
   background-color: #130a0b; border: 1px solid #2a1416;
   border-radius: 6px; padding: 14px; position: relative;
   overflow: hidden; animation: fadeUp 0.6s ease both;
-  transition: border-color 0.25s ease, transform 0.2s ease;
   margin-bottom: 12px;
 }
 .grid .card { margin-bottom: 0; }
-.card:hover { border-color: #48191d; transform: translateY(-2px); }
-.card::before {
-  content: ""; position: absolute; left: 0; width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(184, 35, 43, 0.55), transparent);
-  animation: scanline 6s linear infinite; pointer-events: none; z-index: 1;
-}
+.card::before { content: ""; position: absolute; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(184, 35, 43, 0.55), transparent); animation: scanline 6s linear infinite; pointer-events: none; z-index: 1; }
 .card .corner-tl, .card .corner-br { position: absolute; width: 10px; height: 10px; pointer-events: none; }
 .card .corner-tl { top: -1px; left: -1px; border-top: 2px solid #b8232b; border-left: 2px solid #b8232b; border-top-left-radius: 6px; }
 .card .corner-br { bottom: -1px; right: -1px; border-bottom: 2px solid #b8232b; border-right: 2px solid #b8232b; border-bottom-right-radius: 6px; }
 .serial { position: absolute; top: 6px; right: 8px; font-size: 8px; color: #4a3436; letter-spacing: 1px; text-transform: uppercase; z-index: 3; opacity: 0.8; }
-.card h2 {
-  font-size: 12px; font-weight: 700; color: #efe6e6; text-transform: uppercase;
-  letter-spacing: 1.2px; margin-bottom: 8px; display: flex; align-items: baseline;
-  gap: 6px; position: relative; z-index: 2; padding-right: 44px;
-}
+.card h2 { font-size: 12px; font-weight: 700; color: #efe6e6; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 6px; position: relative; z-index: 2; padding-right: 44px; }
 .card h2 .idx { color: #b8232b; font-size: 10px; opacity: 0.85; }
-.card h2 .led {
-  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-  background: #3cc85a; margin-left: auto; animation: statusDot 1.4s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(60, 200, 90, 0.8);
-}
+.card h2 .led { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #3cc85a; margin-left: auto; animation: statusDot 1.4s ease-in-out infinite; box-shadow: 0 0 6px rgba(60, 200, 90, 0.8); }
 .card p { font-size: 12px; color: #8f7f81; margin-bottom: 12px; line-height: 1.45; position: relative; z-index: 2; }
 
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; padding: 12px 10px; font-family: inherit;
-  font-size: 12px; font-weight: 700; text-decoration: none;
-  text-align: center; text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: 12px; font-weight: 700; text-decoration: none; text-align: center;
+  text-transform: uppercase; letter-spacing: 1.2px;
   color: #150708; background: #b8232b; border: none; border-radius: 4px;
   cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
   -webkit-tap-highlight-color: transparent; min-height: 44px;
   position: relative; z-index: 2; animation: pulseGlow 2.8s ease-in-out infinite;
 }
-.btn::after { content: "›"; font-size: 16px; line-height: 1; opacity: 0.75; }
-.btn:hover { background: #cf2a33; }
+.btn::after { content: "›"; font-size: 16px; opacity: 0.75; }
 .btn:active { transform: translateY(1px) scale(0.99); }
 .btn.ghost { background: transparent; color: #d04a50; border: 1px solid rgba(184, 35, 43, 0.55); animation: none; }
 .btn.ghost::after { content: "→"; font-size: 13px; }
-.btn.ghost:hover { background: rgba(184, 35, 43, 0.10); animation: pulseGlow 2.4s ease-in-out infinite; }
 .btn.no-arrow::after { content: ""; }
 
-#rank-box {
-  padding: 14px; background: #0c0607; border: 1px solid #2a1416;
-  border-radius: 4px; min-height: 84px; display: flex; flex-direction: column;
-  justify-content: center; position: relative; z-index: 2;
-  animation: borderPulse 4s ease-in-out infinite; overflow: hidden;
-}
-#rank-box::before, #rank-box::after {
-  content: ""; position: absolute; width: 14px; height: 14px;
-  border-color: rgba(184, 35, 43, 0.35); border-style: solid;
-}
+#rank-box { padding: 14px; background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; min-height: 84px; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; overflow: hidden; }
+#rank-box::before, #rank-box::after { content: ""; position: absolute; width: 14px; height: 14px; border-color: rgba(184, 35, 43, 0.35); border-style: solid; }
 #rank-box::before { top: 4px; left: 4px; border-width: 1px 0 0 1px; }
 #rank-box::after { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; }
 #rank-box.filled { animation: popIn 0.4s cubic-bezier(.2,.8,.3,1.2) both; }
@@ -191,13 +160,7 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
 .placeholder::after { content: "_"; animation: blink 1s step-end infinite; color: #b8232b; }
 
 .squad-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; position: relative; z-index: 2; }
-.squad {
-  background-color: #0c0607; border: 1px solid #2a1416;
-  border-left: 2px solid #b8232b; border-radius: 3px; padding: 10px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fadeIn 0.8s ease both; position: relative;
-}
-.squad:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(184, 35, 43, 0.18); border-color: #48191d; border-left-color: #cf2a33; }
+.squad { background-color: #0c0607; border: 1px solid #2a1416; border-left: 2px solid #b8232b; border-radius: 3px; padding: 10px; position: relative; }
 .squad .name { font-size: 10.5px; font-weight: 800; color: #d04a50; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; line-height: 1.3; padding-right: 18px; }
 .squad::after { content: "●"; position: absolute; top: 8px; right: 8px; font-size: 6px; color: #b8232b; animation: tickerPulse 2.5s ease-in-out infinite; }
 .squad .desc { font-size: 10.5px; color: #7d6a6c; line-height: 1.4; }
@@ -214,12 +177,7 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
 .stat-fill { height: 100%; background: linear-gradient(90deg, #48191d, #b8232b, #cf2a33); width: 0; border-radius: 3px; }
 .tab-content.active .stat-fill { animation: fillBar 1.2s ease-out forwards; }
 
-.radio-log {
-  font-size: 10px; line-height: 1.7; color: #8f7f81;
-  position: relative; z-index: 2; padding: 10px;
-  background: #0c0607; border: 1px solid #2a1416; border-radius: 4px;
-  height: 240px; overflow-y: auto; scroll-behavior: smooth;
-}
+.radio-log { font-size: 10px; line-height: 1.7; color: #8f7f81; position: relative; z-index: 2; padding: 10px; background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; height: 240px; overflow-y: auto; scroll-behavior: smooth; }
 .radio-log::-webkit-scrollbar { width: 4px; }
 .radio-log::-webkit-scrollbar-thumb { background: #48191d; border-radius: 4px; }
 .radio-log > div { padding: 2px 0; border-bottom: 1px dashed rgba(42, 20, 22, 0.4); }
@@ -237,100 +195,40 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
 .ustav-wrap { position: relative; z-index: 2; }
 .ustav-sec { margin-bottom: 18px; }
 .ustav-sec:last-child { margin-bottom: 0; }
-.ustav-sec h3 {
-  font-size: 11px; color: #d04a50; text-transform: uppercase;
-  letter-spacing: 1.5px; margin-bottom: 8px; padding-bottom: 6px;
-  border-bottom: 1px dashed #48191d; display: flex; gap: 8px; align-items: baseline;
-}
+.ustav-sec h3 { font-size: 11px; color: #d04a50; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed #48191d; display: flex; gap: 8px; align-items: baseline; }
 .ustav-sec h3 .mark { color: #b8232b; font-weight: 800; font-size: 10px; letter-spacing: 1px; }
 .ustav-list { list-style: none; counter-reset: u; }
-.ustav-list li {
-  counter-increment: u; padding: 8px 0 8px 26px; position: relative;
-  font-size: 11.5px; color: #a8a0a1; line-height: 1.5;
-  border-bottom: 1px dashed rgba(42, 20, 22, 0.4);
-}
+.ustav-list li { counter-increment: u; padding: 8px 0 8px 26px; position: relative; font-size: 11.5px; color: #a8a0a1; line-height: 1.5; border-bottom: 1px dashed rgba(42, 20, 22, 0.4); }
 .ustav-list li:last-child { border-bottom: none; }
-.ustav-list li::before {
-  content: counter(u, decimal-leading-zero);
-  position: absolute; left: 0; top: 8px;
-  color: #b8232b; font-weight: 800; font-size: 10px; letter-spacing: 0.5px;
-}
+.ustav-list li::before { content: counter(u, decimal-leading-zero); position: absolute; left: 0; top: 8px; color: #b8232b; font-weight: 800; font-size: 10px; }
 .ustav-list b { color: #d04a50; font-weight: 700; }
 
-/* КАРТА */
-.tactical-map {
-  position: relative; z-index: 2;
-  background: #0a0506; border: 1px solid #2a1416; border-radius: 4px;
-  overflow: hidden;
-}
-.tactical-map svg { display: block; width: 100%; height: auto; position: relative; z-index: 1; }
-.radar-overlay {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: conic-gradient(from 0deg at 50% 50%,
-    transparent 0deg, transparent 305deg,
-    rgba(184, 35, 43, 0.03) 325deg,
-    rgba(184, 35, 43, 0.18) 350deg,
-    rgba(184, 35, 43, 0.42) 358deg,
-    rgba(184, 35, 43, 0.55) 359.6deg,
-    transparent 360deg);
-  animation: radarSpin 9s linear infinite;
-}
+.tactical-map { position: relative; z-index: 2; background: #0a0506; border: 1px solid #2a1416; border-radius: 4px; overflow: hidden; }
+.tactical-map svg { display: block; width: 100%; height: auto; }
+.radar-overlay { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 305deg, rgba(184, 35, 43, 0.03) 325deg, rgba(184, 35, 43, 0.18) 350deg, rgba(184, 35, 43, 0.42) 358deg, rgba(184, 35, 43, 0.55) 359.6deg, transparent 360deg); animation: radarSpin 9s linear infinite; }
 .unit-dot { animation: unitPulse 2s ease-in-out infinite; }
 .pulse-ring { animation: ringPulse 2s ease-out infinite; }
-.map-legend {
-  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
-  font-size: 9px; color: #6b5254; text-transform: uppercase; letter-spacing: 1px;
-  position: relative; z-index: 2;
-}
+.map-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 9px; color: #6b5254; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2; }
 .map-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .map-legend .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
 .map-legend .swatch.red { background: #b8232b; box-shadow: 0 0 6px rgba(184, 35, 43, 0.7); }
 .map-legend .swatch.dark { background: #6b5254; }
 .map-legend .swatch.bld { width: 10px; height: 10px; border-radius: 0; border: 1px dashed #48191d; background: transparent; }
 .map-legend .swatch.grn { background: #3cc85a; }
-.map-meta {
-  display: flex; justify-content: space-between; font-size: 9px; color: #4a3436;
-  text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;
-  position: relative; z-index: 2;
-}
-.scan-bar {
-  display: flex; align-items: center; gap: 8px;
-  margin-top: 10px; padding: 8px 10px;
-  background: #0c0607; border: 1px solid #2a1416; border-radius: 4px;
-  font-size: 9.5px; color: #8f7f81; text-transform: uppercase; letter-spacing: 1px;
-  position: relative; z-index: 2;
-}
-.scan-led {
-  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-  background: #b8232b; animation: scanLed 1.4s ease-in-out infinite;
-  flex-shrink: 0;
-}
+.map-meta { display: flex; justify-content: space-between; font-size: 9px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; position: relative; z-index: 2; }
+.scan-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 10px; background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; font-size: 9.5px; color: #8f7f81; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2; }
+.scan-led { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #b8232b; animation: scanLed 1.4s ease-in-out infinite; flex-shrink: 0; }
 #scanText { color: #a8a0a1; }
 #scanText b { color: #d04a50; font-weight: 700; }
 
-.hq-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-  position: relative; z-index: 2;
-}
-.hq-room {
-  background: #0c0607; border: 1px solid #2a1416; border-radius: 4px;
-  padding: 10px 8px; position: relative; overflow: hidden;
-  transition: all 0.2s ease;
-}
-.hq-room:hover { border-color: #48191d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184, 35, 43, 0.15); }
-.hq-room::before {
-  content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
-  background: #b8232b;
-}
+.hq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; position: relative; z-index: 2; }
+.hq-room { background: #0c0607; border: 1px solid #2a1416; border-radius: 4px; padding: 10px 8px; position: relative; overflow: hidden; }
+.hq-room::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #b8232b; }
 .hq-room.locked::before { background: #2a1416; }
 .hq-room.locked { opacity: 0.55; }
 .hq-num { font-size: 8px; color: #4a3436; letter-spacing: 1px; margin-bottom: 3px; }
 .hq-name { font-size: 10.5px; font-weight: 800; color: #d04a50; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.2; margin-bottom: 4px; }
-.hq-status {
-  font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-  display: inline-block; padding: 1px 5px; border-radius: 2px;
-  border: 1px solid #2a1416; color: #6b5254;
-}
+.hq-status { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; display: inline-block; padding: 1px 5px; border-radius: 2px; border: 1px solid #2a1416; color: #6b5254; }
 .hq-status.active { color: #3cc85a; border-color: rgba(60, 200, 90, 0.4); }
 .hq-status.busy { color: #d04a50; border-color: rgba(208, 74, 80, 0.4); }
 .hq-status.locked { color: #6b5254; border-color: #2a1416; }
@@ -362,7 +260,6 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
   .tab .idx { font-size: 9px; }
   .stat-num { font-size: 26px; }
   .ustav-list li { font-size: 12.5px; }
-  .ustav-sec h3 { font-size: 12px; }
   .radio-log { font-size: 11px; height: 280px; }
   .hq-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .hq-name { font-size: 11px; }
@@ -375,34 +272,41 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
   display: none;
   flex-direction: column;
   font-family: inherit;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
 }
 .game-overlay.active { display: flex; }
 
 .game-hud {
   position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-  display: flex; gap: 8px; padding: 10px 12px;
+  display: flex; gap: 6px; padding: 10px 12px;
+  padding-top: calc(10px + env(safe-area-inset-top));
   background: linear-gradient(to bottom, rgba(5,2,3,0.95), transparent);
   pointer-events: none;
+  flex-wrap: wrap;
 }
 .hud-item {
   background: rgba(12, 6, 7, 0.85);
   border: 1px solid #48191d; border-radius: 4px;
   padding: 6px 10px; display: flex; flex-direction: column;
   align-items: flex-start; gap: 1px; pointer-events: auto;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px); min-width: 62px;
 }
 .hud-lbl { font-size: 8px; color: #6b5254; text-transform: uppercase; letter-spacing: 1.2px; }
 .hud-val { font-size: 15px; color: #efe6e6; font-weight: 800; letter-spacing: 0.5px; }
 .hud-val.hp { color: #3cc85a; }
-.hud-val.hp.low { color: #d04a50; }
+.hud-val.hp.low { color: #d04a50; animation: recDot 0.6s steps(2) infinite; }
+.hud-val.wpn { color: #ffbf4d; }
 
 .game-close {
-  position: absolute; top: 10px; right: 12px;
-  width: 36px; height: 36px;
-  background: rgba(184, 35, 43, 0.9); color: #150708;
+  position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 12px;
+  width: 40px; height: 40px;
+  background: rgba(184, 35, 43, 0.95); color: #150708;
   border: 2px solid #48191d; border-radius: 50%;
-  font-size: 16px; font-weight: 800;
-  cursor: pointer; pointer-events: auto;
+  font-size: 18px; font-weight: 800;
+  cursor: pointer; pointer-events: auto; z-index: 30;
   display: flex; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
@@ -424,86 +328,102 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
   pointer-events: none;
   z-index: 20;
   background: linear-gradient(to top, rgba(5,2,3,0.9) 0%, transparent 100%);
-  padding-top: 30px;
+  padding-top: 40px;
 }
 .game-controls > * { pointer-events: auto; }
 
 .joystick {
-  width: 110px; height: 110px; border-radius: 50%;
-  background: rgba(184, 35, 43, 0.08);
-  border: 2px solid rgba(184, 35, 43, 0.45);
+  width: 130px; height: 130px; border-radius: 50%;
+  background: rgba(184, 35, 43, 0.10);
+  border: 3px solid rgba(184, 35, 43, 0.45);
   position: relative;
   touch-action: none;
   flex-shrink: 0;
 }
+.joystick::before {
+  content: ""; position: absolute; inset: 25%;
+  border-radius: 50%; border: 1px dashed rgba(184, 35, 43, 0.25);
+}
 .joystick-knob {
-  width: 48px; height: 48px; border-radius: 50%;
+  width: 58px; height: 58px; border-radius: 50%;
   background: #b8232b;
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 14px rgba(184, 35, 43, 0.7);
+  box-shadow: 0 0 18px rgba(184, 35, 43, 0.7);
   pointer-events: none;
+  transition: transform 0.05s linear;
 }
 
 .weapon-switcher {
-  display: flex; flex-direction: column; gap: 5px;
+  display: flex; flex-direction: column; gap: 6px;
   align-self: flex-end; margin-bottom: 6px;
 }
 .weapon-btn {
-  background: rgba(12, 6, 7, 0.85); color: #6b5254;
-  border: 1px solid #48191d; border-radius: 4px;
-  padding: 4px 8px; min-width: 68px;
-  font-family: inherit; font-size: 9px; font-weight: 700;
+  background: rgba(12, 6, 7, 0.9); color: #6b5254;
+  border: 2px solid #48191d; border-radius: 6px;
+  padding: 6px 10px; min-width: 76px;
+  font-family: inherit; font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.8px;
-  display: flex; justify-content: space-between; gap: 6px;
+  display: flex; justify-content: space-between; gap: 8px;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.15s ease;
   backdrop-filter: blur(6px);
+  min-height: 40px; align-items: center;
 }
-.weapon-btn.active { color: #150708; background: #b8232b; border-color: #cf2a33; }
-.weapon-btn .wk { font-size: 8px; opacity: 0.7; }
+.weapon-btn.active { color: #150708; background: #b8232b; border-color: #cf2a33; box-shadow: 0 0 12px rgba(184, 35, 43, 0.6); }
 .weapon-btn .wn { font-weight: 800; }
 
 .fire-btn {
-  width: 84px; height: 84px; border-radius: 50%;
+  width: 100px; height: 100px; border-radius: 50%;
   background: #b8232b; color: #fff;
-  border: 3px solid #48191d;
-  font-size: 28px; cursor: pointer;
+  border: 4px solid #48191d;
+  font-size: 32px; cursor: pointer;
   touch-action: none; -webkit-tap-highlight-color: transparent;
   box-shadow: 0 0 22px rgba(184, 35, 43, 0.55);
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  user-select: none;
 }
-.fire-btn:active { transform: scale(0.93); box-shadow: 0 0 30px rgba(207, 42, 51, 0.9); }
+.fire-btn:active, .fire-btn.firing {
+  transform: scale(0.92);
+  box-shadow: 0 0 35px rgba(207, 42, 51, 0.95);
+  background: #cf2a33;
+}
 
 .game-over-screen {
   position: absolute; inset: 0; z-index: 50;
-  background: rgba(5, 2, 3, 0.92);
+  background: rgba(5, 2, 3, 0.94);
   display: none;
   flex-direction: column; align-items: center; justify-content: center;
   padding: 24px; gap: 14px;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 .game-over-screen.active { display: flex; }
-.game-over-screen h2 {
-  font-size: 22px; color: #d04a50; text-transform: uppercase;
-  letter-spacing: 2px; text-align: center; margin-bottom: 8px;
-}
+.game-over-screen h2 { font-size: 22px; color: #d04a50; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 8px; }
 .go-stat { font-size: 14px; color: #a8a0a1; text-transform: uppercase; letter-spacing: 1px; }
-.go-stat b { color: #efe6e6; font-size: 20px; margin-left: 8px; }
+.go-stat b { color: #efe6e6; font-size: 22px; margin-left: 10px; }
 .go-note { font-size: 10px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px; margin: 8px 0; }
-.game-over-screen .btn { max-width: 260px; }
+.game-over-screen .btn { max-width: 280px; }
 
-@media (max-width: 400px) {
+/* Адаптив для маленьких телефонов */
+@media (max-width: 420px) {
+  .joystick { width: 110px; height: 110px; }
+  .joystick-knob { width: 48px; height: 48px; }
+  .fire-btn { width: 84px; height: 84px; font-size: 26px; }
+  .weapon-btn { font-size: 9px; padding: 5px 8px; min-width: 66px; min-height: 36px; }
+  .game-controls { padding-left: 12px; padding-right: 12px; gap: 8px; }
+  .hud-item { padding: 4px 8px; min-width: 54px; }
+  .hud-val { font-size: 13px; }
+  .train-btn { font-size: 9px; padding: 6px 8px; }
+}
+/* Ландшафт */
+@media (orientation: landscape) and (max-height: 500px) {
   .joystick { width: 90px; height: 90px; }
   .joystick-knob { width: 40px; height: 40px; }
-  .fire-btn { width: 72px; height: 72px; font-size: 22px; }
-  .train-btn { font-size: 9px; padding: 6px 8px; }
-  .weapon-btn { font-size: 8px; padding: 3px 6px; min-width: 58px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  .fire-btn { width: 76px; height: 76px; font-size: 22px; }
+  .game-controls { padding-bottom: calc(8px + env(safe-area-inset-bottom)); padding-top: 20px; }
+  .weapon-switcher { flex-direction: row; margin-bottom: 0; align-self: center; }
+  .weapon-btn { min-height: 32px; font-size: 9px; padding: 4px 8px; min-width: 56px; }
 }
 </style>
 </head>
@@ -512,7 +432,6 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
 <button class="train-btn" id="trainBtn"><span class="ico">🎯</span> Тренировка</button>
 
 <div class="container">
-
   <div class="status-bar">
     <div class="left"><span class="status-dot"></span><span>ONLINE</span></div>
     <div class="right">
@@ -560,20 +479,14 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <h2><span class="idx">[03]</span> Назначение в отряд</h2>
       <p>Нажми — система распределит тебя в один из 17 отрядов бригады.</p>
       <button class="btn no-arrow" onclick="randomRank()">Получить назначение</button>
-      <div id="rank-box" style="margin-top: 12px;">
-        <div class="placeholder">// ожидание приказа</div>
-      </div>
+      <div id="rank-box" style="margin-top: 12px;"><div class="placeholder">// ожидание приказа</div></div>
     </div>
     <div class="card">
       <span class="corner-tl"></span><span class="corner-br"></span>
       <span class="serial">SN-0x4D</span>
       <h2><span class="idx">[04]</span> Брифинг дня</h2>
-      <p style="margin-bottom: 0; font-style: italic; color: #a8a0a1; border-left: 2px solid #b8232b; padding-left: 10px;">
-        «Лучший бой — тот, на который не пришлось идти. Лучший контракт — тот, который ты не подписал».
-      </p>
-      <p style="margin-top: 10px; margin-bottom: 0; font-size: 10px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px;">
-        — Устав Мопс-Бригады, ст. 1
-      </p>
+      <p style="margin-bottom: 0; font-style: italic; color: #a8a0a1; border-left: 2px solid #b8232b; padding-left: 10px;">«Лучший бой — тот, на который не пришлось идти. Лучший контракт — тот, который ты не подписал».</p>
+      <p style="margin-top: 10px; margin-bottom: 0; font-size: 10px; color: #4a3436; text-transform: uppercase; letter-spacing: 1px;">— Устав Мопс-Бригады, ст. 1</p>
     </div>
   </section>
 
@@ -603,22 +516,10 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <span class="corner-tl"></span><span class="corner-br"></span>
       <span class="serial">SN-0x7A</span>
       <h2><span class="idx">[02]</span> Показатели</h2>
-      <div class="stat">
-        <div class="stat-row"><span>Боеготовность</span><span>87%</span></div>
-        <div class="stat-bar"><div class="stat-fill" style="--w:87%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-row"><span>Настроение</span><span>100%</span></div>
-        <div class="stat-bar"><div class="stat-fill" style="--w:100%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-row"><span>Запас чая</span><span>42%</span></div>
-        <div class="stat-bar"><div class="stat-fill" style="--w:42%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-row"><span>Уровень секретности</span><span>73%</span></div>
-        <div class="stat-bar"><div class="stat-fill" style="--w:73%"></div></div>
-      </div>
+      <div class="stat"><div class="stat-row"><span>Боеготовность</span><span>87%</span></div><div class="stat-bar"><div class="stat-fill" style="--w:87%"></div></div></div>
+      <div class="stat"><div class="stat-row"><span>Настроение</span><span>100%</span></div><div class="stat-bar"><div class="stat-fill" style="--w:100%"></div></div></div>
+      <div class="stat"><div class="stat-row"><span>Запас чая</span><span>42%</span></div><div class="stat-bar"><div class="stat-fill" style="--w:42%"></div></div></div>
+      <div class="stat"><div class="stat-row"><span>Уровень секретности</span><span>73%</span></div><div class="stat-bar"><div class="stat-fill" style="--w:73%"></div></div></div>
     </div>
     <div class="card">
       <span class="corner-tl"></span><span class="corner-br"></span>
@@ -635,151 +536,47 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <span class="serial">SN-0xA1</span>
       <h2><span class="idx">[01]</span> Тактическая карта <span class="led"></span></h2>
       <p>Сектор 04. Наблюдаем, фиксируем, не вмешиваемся.</p>
-
       <div class="tactical-map">
         <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="gridSm" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2a1416" stroke-width="0.5"/>
-            </pattern>
-            <pattern id="gridLg" width="100" height="100" patternUnits="userSpaceOnUse">
-              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#48191d" stroke-width="0.9"/>
-            </pattern>
-            <radialGradient id="mapVignette" cx="50%" cy="50%" r="70%">
-              <stop offset="0%" stop-color="rgba(184,35,43,0.06)"/>
-              <stop offset="100%" stop-color="rgba(0,0,0,0.6)"/>
-            </radialGradient>
-            <radialGradient id="hotSpot" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="rgba(184,35,43,0.5)"/>
-              <stop offset="100%" stop-color="rgba(184,35,43,0)"/>
-            </radialGradient>
+            <pattern id="gridSm" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2a1416" stroke-width="0.5"/></pattern>
+            <pattern id="gridLg" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="#48191d" stroke-width="0.9"/></pattern>
+            <radialGradient id="mapVignette" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="rgba(184,35,43,0.06)"/><stop offset="100%" stop-color="rgba(0,0,0,0.6)"/></radialGradient>
           </defs>
-
           <rect width="400" height="260" fill="#0a0506"/>
           <rect width="400" height="260" fill="url(#gridSm)"/>
           <rect width="400" height="260" fill="url(#gridLg)"/>
-
-          <!-- Координаты по краям -->
-          <g fill="#48191d" font-size="5" font-family="monospace" letter-spacing="0.5">
-            <text x="10" y="9">A1</text><text x="110" y="9">B1</text><text x="210" y="9">C1</text><text x="310" y="9">D1</text>
-            <text x="10" y="255">A4</text><text x="110" y="255">B4</text><text x="210" y="255">C4</text><text x="310" y="255">D4</text>
-          </g>
-
-          <!-- Горячая зона активности -->
-          <circle cx="270" cy="75" r="30" fill="url(#hotSpot)">
-            <animate attributeName="r" values="25;35;25" dur="3s" repeatCount="indefinite"/>
-          </circle>
-
-          <!-- Здания (больше) -->
+          <g fill="#48191d" font-size="5" font-family="monospace"><text x="10" y="9">A1</text><text x="110" y="9">B1</text><text x="210" y="9">C1</text><text x="310" y="9">D1</text><text x="10" y="255">A4</text><text x="110" y="255">B4</text><text x="210" y="255">C4</text><text x="310" y="255">D4</text></g>
           <rect x="70" y="55" width="70" height="48" fill="rgba(184,35,43,0.06)" stroke="#48191d" stroke-dasharray="2 3"/>
           <text x="105" y="83" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">СКЛАД</text>
-          <rect x="82" y="65" width="8" height="8" fill="none" stroke="#48191d" stroke-width="0.5"/>
-          <rect x="120" y="65" width="8" height="8" fill="none" stroke="#48191d" stroke-width="0.5"/>
-
           <rect x="230" y="55" width="90" height="55" fill="rgba(184,35,43,0.06)" stroke="#48191d" stroke-dasharray="2 3"/>
           <text x="275" y="86" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">АНГАР</text>
-          <line x1="240" y1="98" x2="310" y2="98" stroke="#48191d" stroke-width="0.4"/>
-          <line x1="240" y1="60" x2="240" y2="105" stroke="#48191d" stroke-width="0.4"/>
-
           <rect x="160" y="150" width="80" height="60" fill="rgba(184,35,43,0.06)" stroke="#48191d" stroke-dasharray="2 3"/>
           <text x="200" y="184" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">БЛОК-ПОСТ</text>
-          <circle cx="200" cy="168" r="3" fill="none" stroke="#6b5254" stroke-width="0.5"/>
-          <line x1="197" y1="168" x2="203" y2="168" stroke="#6b5254" stroke-width="0.5"/>
-          <line x1="200" y1="165" x2="200" y2="171" stroke="#6b5254" stroke-width="0.5"/>
-
           <rect x="300" y="165" width="70" height="55" fill="rgba(184,35,43,0.06)" stroke="#48191d" stroke-dasharray="2 3"/>
           <text x="335" y="195" font-size="6" fill="#6b5254" text-anchor="middle" letter-spacing="1">КУСТЫ</text>
-          <circle cx="315" cy="175" r="3" fill="none" stroke="#48191d" stroke-width="0.4"/>
-          <circle cx="325" cy="182" r="2" fill="none" stroke="#48191d" stroke-width="0.4"/>
-          <circle cx="345" cy="176" r="2.5" fill="none" stroke="#48191d" stroke-width="0.4"/>
-
-          <!-- Дороги -->
           <line x1="0" y1="130" x2="400" y2="130" stroke="#48191d" stroke-width="0.8" stroke-dasharray="4 4"/>
           <line x1="200" y1="0" x2="200" y2="260" stroke="#48191d" stroke-width="0.8" stroke-dasharray="4 4"/>
-          <text x="380" y="128" font-size="5" fill="#48191d">T-04</text>
-
-          <!-- Противники -->
-          <g stroke="#6b5254" stroke-width="1.5">
-            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite"/>
-            <line x1="315" y1="60" x2="325" y2="70"/>
-            <line x1="325" y1="60" x2="315" y2="70"/>
-          </g>
-          <g stroke="#6b5254" stroke-width="1.5">
-            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.1s" repeatCount="indefinite"/>
-            <line x1="120" y1="190" x2="130" y2="200"/>
-            <line x1="130" y1="190" x2="120" y2="200"/>
-          </g>
-
-          <!-- Дрон по орбите -->
-          <g>
-            <animateTransform attributeName="transform" type="rotate" from="0 335 200" to="360 335 200" dur="14s" repeatCount="indefinite"/>
-            <circle cx="350" cy="200" r="1.5" fill="#b8232b"/>
-            <circle cx="350" cy="200" r="3" fill="none" stroke="#b8232b" stroke-width="0.5" opacity="0.5"/>
-          </g>
-
-          <!-- Отряды -->
-          <g>
-            <animateTransform attributeName="transform" type="translate" values="0,0; 6,-3; 3,5; -3,2; 0,0" dur="14s" repeatCount="indefinite"/>
-            <circle cx="55" cy="90" r="4" fill="#b8232b" class="unit-dot"/>
-            <circle cx="55" cy="90" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
-            <text x="65" y="93" font-size="6" fill="#d04a50" letter-spacing="0.5">БРОНЕМОПС</text>
-          </g>
-          <g>
-            <animateTransform attributeName="transform" type="translate" values="0,0; -4,3; 5,4; 2,-4; 0,0" dur="16s" repeatCount="indefinite"/>
-            <circle cx="270" cy="35" r="4" fill="#b8232b" class="unit-dot"/>
-            <circle cx="270" cy="35" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
-            <text x="280" y="38" font-size="6" fill="#d04a50" letter-spacing="0.5">МОПСОВЫЙ ДЕСАНТ</text>
-          </g>
-          <g>
-            <animateTransform attributeName="transform" type="translate" values="0,0; 5,2; 2,-5; -4,-2; 0,0" dur="13s" repeatCount="indefinite"/>
-            <circle cx="200" cy="125" r="4" fill="#b8232b" class="unit-dot"/>
-            <circle cx="200" cy="125" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
-            <text x="210" y="128" font-size="6" fill="#d04a50" letter-spacing="0.5">ЧВК МОПС</text>
-          </g>
-          <g>
-            <animateTransform attributeName="transform" type="translate" values="0,0; -3,-4; 4,-2; -2,4; 0,0" dur="17s" repeatCount="indefinite"/>
-            <circle cx="340" cy="235" r="4" fill="#b8232b" class="unit-dot"/>
-            <circle cx="340" cy="235" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
-            <text x="270" y="245" font-size="6" fill="#d04a50" letter-spacing="0.5">ТАКТИЧЕСКИЕ</text>
-          </g>
-          <g>
-            <animateTransform attributeName="transform" type="translate" values="0,0; 3,4; -3,3; 2,-3; 0,0" dur="15s" repeatCount="indefinite"/>
-            <circle cx="80" cy="215" r="4" fill="#b8232b" class="unit-dot"/>
-            <circle cx="80" cy="215" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/>
-            <text x="90" y="218" font-size="6" fill="#d04a50" letter-spacing="0.5">ОРИЕНТИРНЫЕ</text>
-          </g>
-
-          <!-- Штаб -->
-          <g>
-            <circle cx="30" cy="235" r="6" fill="none" stroke="#3cc85a" stroke-width="1" opacity="0.6">
-              <animate attributeName="r" values="5;9;5" dur="2s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="30" cy="235" r="2.5" fill="#3cc85a"/>
-            <text x="40" y="238" font-size="6" fill="#3cc85a" letter-spacing="0.5">ШТАБ</text>
-          </g>
-
+          <g stroke="#6b5254" stroke-width="1.5"><animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite"/><line x1="315" y1="60" x2="325" y2="70"/><line x1="325" y1="60" x2="315" y2="70"/></g>
+          <g stroke="#6b5254" stroke-width="1.5"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.1s" repeatCount="indefinite"/><line x1="120" y1="190" x2="130" y2="200"/><line x1="130" y1="190" x2="120" y2="200"/></g>
+          <g><animateTransform attributeName="transform" type="translate" values="0,0; 6,-3; 3,5; -3,2; 0,0" dur="14s" repeatCount="indefinite"/><circle cx="55" cy="90" r="4" fill="#b8232b" class="unit-dot"/><circle cx="55" cy="90" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/><text x="65" y="93" font-size="6" fill="#d04a50">БРОНЕМОПС</text></g>
+          <g><animateTransform attributeName="transform" type="translate" values="0,0; -4,3; 5,4; 2,-4; 0,0" dur="16s" repeatCount="indefinite"/><circle cx="270" cy="35" r="4" fill="#b8232b" class="unit-dot"/><circle cx="270" cy="35" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/><text x="280" y="38" font-size="6" fill="#d04a50">ДЕСАНТ</text></g>
+          <g><animateTransform attributeName="transform" type="translate" values="0,0; 5,2; 2,-5; -4,-2; 0,0" dur="13s" repeatCount="indefinite"/><circle cx="200" cy="125" r="4" fill="#b8232b" class="unit-dot"/><circle cx="200" cy="125" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/><text x="210" y="128" font-size="6" fill="#d04a50">ЧВК МОПС</text></g>
+          <g><animateTransform attributeName="transform" type="translate" values="0,0; -3,-4; 4,-2; -2,4; 0,0" dur="17s" repeatCount="indefinite"/><circle cx="340" cy="235" r="4" fill="#b8232b" class="unit-dot"/><circle cx="340" cy="235" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/><text x="270" y="245" font-size="6" fill="#d04a50">ТАКТИЧЕСКИЕ</text></g>
+          <g><animateTransform attributeName="transform" type="translate" values="0,0; 3,4; -3,3; 2,-3; 0,0" dur="15s" repeatCount="indefinite"/><circle cx="80" cy="215" r="4" fill="#b8232b" class="unit-dot"/><circle cx="80" cy="215" r="4" fill="none" stroke="#b8232b" stroke-width="1" class="pulse-ring" opacity="0.6"/><text x="90" y="218" font-size="6" fill="#d04a50">ОРИЕНТИРНЫЕ</text></g>
+          <g><circle cx="30" cy="235" r="6" fill="none" stroke="#3cc85a" stroke-width="1" opacity="0.6"><animate attributeName="r" values="5;9;5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/></circle><circle cx="30" cy="235" r="2.5" fill="#3cc85a"/><text x="40" y="238" font-size="6" fill="#3cc85a">ШТАБ</text></g>
           <rect width="400" height="260" fill="url(#mapVignette)"/>
         </svg>
         <div class="radar-overlay"></div>
       </div>
-
       <div class="map-legend">
         <span><span class="swatch red"></span>Наши</span>
         <span><span class="swatch dark"></span>Противник</span>
         <span><span class="swatch bld"></span>Объект</span>
         <span><span class="swatch grn"></span>Штаб</span>
       </div>
-      <div class="map-meta">
-        <span>SECTOR 04</span>
-        <span>55.75°N / 37.61°E</span>
-        <span>SCALE 1:5000</span>
-      </div>
-
-      <div class="scan-bar">
-        <span class="scan-led"></span>
-        <span id="scanText">// сканирование сектора...</span>
-      </div>
+      <div class="map-meta"><span>SECTOR 04</span><span>55.75°N / 37.61°E</span><span>SCALE 1:5000</span></div>
+      <div class="scan-bar"><span class="scan-led"></span><span id="scanText">// сканирование сектора...</span></div>
     </div>
 
     <div class="card">
@@ -787,7 +584,6 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <span class="serial">SN-0xA2</span>
       <h2><span class="idx">[02]</span> План штаба</h2>
       <p>Восемь помещений. Все двери — с этой стороны.</p>
-
       <div class="hq-grid">
         <div class="hq-room"><div class="hq-num">01</div><div class="hq-name">Оперативный зал</div><div class="hq-status active">ACTIVE</div></div>
         <div class="hq-room"><div class="hq-num">02</div><div class="hq-name">Серверная</div><div class="hq-status active">ONLINE</div></div>
@@ -807,7 +603,6 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <span class="serial">SN-0x9C</span>
       <h2><span class="idx">[01]</span> Устав бригады</h2>
       <p>Семь разделов, двадцать семь пунктов. Читать — обязательно. Выполнять — тоже.</p>
-
       <div class="ustav-wrap">
         <section class="ustav-sec">
           <h3><span class="mark">§1</span> Общие положения</h3>
@@ -895,7 +690,6 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
     Сайт-мем. Все отряды, звания и операции — вымышленные. Совпадения случайны.
     <span class="coord">55.75°N / 37.61°E · SECTOR 04 · BUILD 2.11.26 · UNIT · MOPSSQUAD</span>
   </p>
-
 </div>
 
 <!-- ============ ИГРА ============ -->
@@ -904,6 +698,7 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
     <div class="hud-item"><span class="hud-lbl">СЧЁТ</span><span class="hud-val" id="hudScore">0</span></div>
     <div class="hud-item"><span class="hud-lbl">HP</span><span class="hud-val hp" id="hudHp">100</span></div>
     <div class="hud-item"><span class="hud-lbl">УБИЙСТВ</span><span class="hud-val" id="hudKills">0</span></div>
+    <div class="hud-item"><span class="hud-lbl">ОРУЖИЕ</span><span class="hud-val wpn" id="hudWeapon">ПМ</span></div>
   </div>
   <button class="game-close" id="closeGame">✕</button>
 
@@ -914,9 +709,9 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
       <div class="joystick-knob" id="joystickKnob"></div>
     </div>
     <div class="weapon-switcher">
-      <button class="weapon-btn active" data-weapon="pistol"><span class="wn">ПМ</span><span class="wk">1</span></button>
-      <button class="weapon-btn" data-weapon="ak"><span class="wn">АК</span><span class="wk">2</span></button>
-      <button class="weapon-btn" data-weapon="knife"><span class="wn">НОЖ</span><span class="wk">3</span></button>
+      <button class="weapon-btn active" data-weapon="pistol"><span class="wn">ПМ</span></button>
+      <button class="weapon-btn" data-weapon="ak"><span class="wn">АК</span></button>
+      <button class="weapon-btn" data-weapon="knife"><span class="wn">НОЖ</span></button>
     </div>
     <button class="fire-btn" id="fireBtn">🔥</button>
   </div>
@@ -931,7 +726,7 @@ h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #efe6e6; tex
 </div>
 
 <script>
-/* ================= ОТРЯДЫ ================= */
+/* ================= ОТРЯДЫ / САЙТ ================= */
 const squads = [
   { title: "Бронемопс", desc: "Водители военной техники: БТР, танки и всё, что едет и громыхает." },
   { title: "Мопсовый десант", desc: "Отряд воздушной бомбардировки. Прибывают сверху, уходят по-английски." },
@@ -969,11 +764,11 @@ function randomRank() {
   let i;
   do { i = Math.floor(Math.random() * squads.length); } while (i === lastIndex && squads.length > 1);
   lastIndex = i;
-  const squad = squads[i];
+  const sq = squads[i];
   box.classList.remove('filled');
   box.innerHTML = '<div class="placeholder">// обработка запроса</div>';
   setTimeout(() => {
-    box.innerHTML = '<div id="rank-title">' + squad.title + '</div><div id="rank-desc">' + squad.desc + '</div>';
+    box.innerHTML = '<div id="rank-title">' + sq.title + '</div><div id="rank-desc">' + sq.desc + '</div>';
     box.classList.add('filled');
   }, 420);
 }
@@ -983,31 +778,30 @@ document.querySelectorAll('.tab').forEach(t => {
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
-    const target = document.getElementById('tab-' + t.dataset.tab);
-    if (target) target.classList.add('active');
+    const el = document.getElementById('tab-' + t.dataset.tab);
+    if (el) el.classList.add('active');
   });
 });
 
 function updateClock() {
-  const now = new Date();
-  const pad = n => String(n).padStart(2, '0');
+  const n = new Date();
+  const p = x => String(x).padStart(2, '0');
   const el = document.getElementById('clock');
-  if (el) el.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  if (el) el.textContent = p(n.getHours()) + ':' + p(n.getMinutes()) + ':' + p(n.getSeconds());
 }
 updateClock();
 setInterval(updateClock, 1000);
 
 (function buildTicks() {
-  const wrap = document.getElementById('tickerMarks');
-  if (!wrap) return;
+  const w = document.getElementById('tickerMarks');
   for (let i = 0; i < 32; i++) {
     const t = document.createElement('span');
     t.className = 'tick' + (i % 8 === 0 ? ' major' : '');
-    wrap.appendChild(t);
+    w.appendChild(t);
   }
 })();
 
-/* ================= ЖИВОЙ РАДИОПЕРЕХВАТ ================= */
+/* ================= РАДИО ================= */
 const radioPool = [
   { who: "ШТАБ", text: "перекличка, всем ответить" },
   { who: "БРОНЕМОПС", text: '<span class="ok">на связи</span>' },
@@ -1015,630 +809,26 @@ const radioPool = [
   { who: "ШТАБ", text: "приказ: не воевать. выполняется" },
   { who: "ШТАБ", text: "кто-нибудь видел карту?" },
   { who: "ШТАБ", text: "а кто взял мой степлер?" },
-  { who: "ШТАБ", text: "статус бригады: не воевать. подтверждаю" },
   { who: "ШТАБ", text: "всем внимание: обед через 15 минут" },
   { who: "ШТАБ", text: "гость в переговорке. чай уже налит" },
   { who: "ЧВК МОПС", text: "дрон вернулся на базу. без потерь" },
   { who: "ЧВК МОПС", text: "дрон-ямаха ушёл в горизонт" },
-  { who: "ЧВК МОПС", text: "мультикоптер слышит чужой вайфай. интересно" },
   { who: "САПЁР-ОПТИМИСТ", text: '<span class="warn">всё ещё верит в лучшее</span>' },
   { who: "САПЁР-ОПТИМИСТ", text: "обрезал красный. всё хорошо. верю" },
-  { who: "САПЁР-ОПТИМИСТ", text: "ошибся? нет. пока нет" },
   { who: "ТАКТИЧЕСКИЕ", text: "тишина в эфире. работаем" },
   { who: "ТАКТИЧЕСКИЕ", text: "позиция занята. окна открыты" },
-  { who: "ТАКТИЧЕСКИЕ", text: "нашли в здании только вазу. эвакуируем" },
   { who: "ГЛУШИТЕЛЬ", text: "чей-то вайфай заглушён. на всякий" },
-  { who: "ГЛУШИТЕЛЬ", text: "глушил сам себя. работает" },
   { who: "КУСТОВОЙ НИНДЗЯ", text: "я в кусте. всё вижу. ничего не говорю" },
   { who: "КУСТОВОЙ НИНДЗЯ", text: "куст доволен. продолжаем" },
   { who: "СНАЙПЕР", text: "белка замечена. держу на прицеле" },
   { who: "СНАЙПЕР", text: "дыхание ровное. чай не пролит" },
-  { who: "СНАЙПЕР", text: "белка оказалась пакетом. отбой" },
   { who: "ПУЛЕМЁТЧИК", text: "горох готов к посеву" },
   { who: "ГРАНАТОМЁТЧИК", text: "гостинцы упакованы" },
   { who: "МОПСО-ФАКЕЛ", text: "спички на месте" },
   { who: "ДОСТАВЩИК ПРИВЕТОВ", text: "приветы горячие, доставка мгновенная" },
   { who: "ХРАНИТЕЛЬ ТАЙН", text: "папки в сейфе. тайны при мне" },
-  { who: "ХРАНИТЕЛЬ ТАЙН", text: "это секретно. даже от вас" },
   { who: "ШТАБНОЙ ОФИЦЕР", text: "карта найдена. она была под чашкой" },
   { who: "НАЧАЛЬНИК РАЗВЕДКИ", text: "главный по кустам на месте" },
   { who: "ШТУРМОВИК", text: "без тормозов. но с сердцем" },
   { who: "ОРИЕНТИРНЫЕ", text: "дорога пуста. ведём" },
-  { who: "БРОНЕМОПС", text: "двигатель прогрелся. едим дальше" },
-  { who: "КУХНЯ", text: "чайник закипел. повторяю: чайник закипел" },
-  { who: "КУХНЯ", text: "кто съел последний мопс-пряник?" },
-  { who: "СЕРВЕРНАЯ", text: "температура растёт. не критично. пока" },
-  { who: "СИСТЕМА", text: '<span class="ok">сеанс зашифрован</span>' },
-  { who: "СИСТЕМА", text: '<span class="ok">канал стабилен</span>' },
-  { who: "СИСТЕМА", text: "обнаружен мем в эфире. пропущен" }
-];
-
-function shuffleArr(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-  }
-  return a;
-}
-
-const radioQueue = shuffleArr(radioPool.slice());
-let radioQIdx = 0;
-const radioLog = document.getElementById('radioLog');
-function pad2(n) { return String(n).padStart(2, '0'); }
-function nowTs() {
-  const d = new Date();
-  return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
-}
-function nextRadioMsg() {
-  if (radioQIdx >= radioQueue.length) { shuffleArr(radioQueue); radioQIdx = 0; }
-  return radioQueue[radioQIdx++];
-}
-function pushRadio(entry) {
-  if (!radioLog) return;
-  const oldTyping = radioLog.querySelector('.typing');
-  if (oldTyping) oldTyping.remove();
-  const div = document.createElement('div');
-  div.className = 'new';
-  div.innerHTML = '<span class="ts">' + nowTs() + '</span> <span class="who">' + entry.who + '</span>: ' + entry.text;
-  radioLog.appendChild(div);
-  while (radioLog.children.length > 40) radioLog.removeChild(radioLog.firstChild);
-  radioLog.scrollTop = radioLog.scrollHeight;
-}
-function showTyping() {
-  if (!radioLog) return;
-  const oldTyping = radioLog.querySelector('.typing');
-  if (oldTyping) oldTyping.remove();
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '// печатает<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-  radioLog.appendChild(typing);
-  radioLog.scrollTop = radioLog.scrollHeight;
-}
-for (let i = 0; i < 4; i++) pushRadio(nextRadioMsg());
-
-function scheduleNextRadio() {
-  const delay = 6000 + Math.random() * 6000;
-  setTimeout(() => {
-    showTyping();
-    setTimeout(() => {
-      pushRadio(nextRadioMsg());
-      scheduleNextRadio();
-    }, 1500 + Math.random() * 1000);
-  }, delay);
-}
-scheduleNextRadio();
-
-/* ================= СКАНЕР КАРТЫ ================= */
-const scanSamples = [
-  'сектор чист · <b>0 контактов</b>',
-  'обнаружен <b>1 контакт</b> в квадрате Б-4',
-  'обнаружено <b>2 контакта</b>. один — кот',
-  'сканирование... <b>3 неопознанных</b> объекта',
-  'шум в эфире. <b>вероятно, помехи</b>',
-  'радар активен. <b>5 отрядов</b> на позициях',
-  'перехвачен <b>мем</b>. не угрожает',
-  'координаты подтверждены. <b>движение не зафиксировано</b>',
-  'куст оказался разведчиком. <b>привет</b>',
-  'объект на севере <b>не двигается</b> уже час',
-  'получен сигнал. <b>вероятно, дрон вернулся</b>',
-  'приборы в норме. <b>эфир тихий</b>',
-  'найдена <b>чашка</b> в серверной. владелец неизвестен'
-];
-const scanTextEl = document.getElementById('scanText');
-function scanTick() {
-  if (scanTextEl) {
-    const r = scanSamples[Math.floor(Math.random() * scanSamples.length)];
-    scanTextEl.innerHTML = '// ' + r;
-  }
-  setTimeout(scanTick, 3200 + Math.random() * 3200);
-}
-setTimeout(scanTick, 1200);
-
-/* ================= ИГРА: ТРЕНИРОВКА ================= */
-const gameOverlay = document.getElementById('gameOverlay');
-const gameCanvas = document.getElementById('gameCanvas');
-const ctx = gameCanvas ? gameCanvas.getContext('2d') : null;
-const hudScore = document.getElementById('hudScore');
-const hudHp = document.getElementById('hudHp');
-const hudKills = document.getElementById('hudKills');
-const gameOverScreen = document.getElementById('gameOverScreen');
-const finalScore = document.getElementById('finalScore');
-const finalKills = document.getElementById('finalKills');
-
-const MAP_W = 2000;
-const MAP_H = 2000;
-
-const weapons = {
-  pistol: { name: 'ПМ', dmg: 25, range: 320, cooldown: 380, speed: 900, size: 3, color: '#e2e2e2', spread: 0.04, melee: false },
-  ak:     { name: 'АК', dmg: 18, range: 420, cooldown: 130, speed: 1100, size: 3, color: '#ffbf4d', spread: 0.09, melee: false },
-  knife:  { name: 'НОЖ', dmg: 60, range: 55, cooldown: 350, speed: 0, size: 0, color: '#fff', spread: 0, melee: true }
-};
-
-let gameRunning = false;
-let gameState = null;
-let rafId = null;
-let lastFrame = 0;
-
-function mulberry32(a) {
-  return function() {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-function generateWalls() {
-  const walls = [];
-  walls.push({ x: 0, y: 0, w: MAP_W, h: 20 });
-  walls.push({ x: 0, y: MAP_H - 20, w: MAP_W, h: 20 });
-  walls.push({ x: 0, y: 0, w: 20, h: MAP_H });
-  walls.push({ x: MAP_W - 20, y: 0, w: 20, h: MAP_H });
-  const rng = mulberry32(Math.floor(Math.random() * 100000));
-  for (let i = 0; i < 40; i++) {
-    const w = 60 + Math.floor(rng() * 140);
-    const h = 60 + Math.floor(rng() * 140);
-    const x = 80 + rng() * (MAP_W - 160 - w);
-    const y = 80 + rng() * (MAP_H - 160 - h);
-    const cx = x + w / 2, cy = y + h / 2;
-    if (Math.hypot(cx - MAP_W / 2, cy - MAP_H / 2) < 240) continue;
-    walls.push({ x, y, w, h });
-  }
-  return walls;
-}
-
-function resizeCanvas() {
-  if (!gameCanvas) return;
-  gameCanvas.width = window.innerWidth;
-  gameCanvas.height = window.innerHeight;
-}
-
-function collidesAny(x, y, r, walls) {
-  for (let i = 0; i < walls.length; i++) {
-    const w = walls[i];
-    const cx = Math.max(w.x, Math.min(x, w.x + w.w));
-    const cy = Math.max(w.y, Math.min(y, w.y + w.h));
-    if ((x - cx) * (x - cx) + (y - cy) * (y - cy) < r * r) return true;
-  }
-  return false;
-}
-
-function startGame() {
-  if (!gameCanvas || !ctx) return;
-  gameOverlay.classList.add('active');
-  resizeCanvas();
-  gameState = {
-    player: { x: MAP_W / 2, y: MAP_H / 2, r: 14, hp: 100, maxHp: 100, speed: 230, angle: 0 },
-    bullets: [],
-    enemies: [],
-    particles: [],
-    walls: generateWalls(),
-    score: 0,
-    kills: 0,
-    lastShot: 0,
-    weapon: 'pistol',
-    spawnTimer: 0,
-    keys: {},
-    joystick: { x: 0, y: 0 },
-    firing: false
-  };
-  gameRunning = true;
-  gameOverScreen.classList.remove('active');
-  hudScore.textContent = '0';
-  hudKills.textContent = '0';
-  hudHp.textContent = '100';
-  hudHp.classList.remove('low');
-  lastFrame = performance.now();
-  if (rafId) cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(gameLoop);
-}
-
-function gameLoop(now) {
-  if (!gameRunning) return;
-  const dt = Math.min(50, now - lastFrame) / 1000;
-  lastFrame = now;
-  update(dt, now);
-  render();
-  rafId = requestAnimationFrame(gameLoop);
-}
-
-function spawnEnemy() {
-  const s = gameState;
-  let x, y, tries = 0;
-  do {
-    const side = Math.floor(Math.random() * 4);
-    const margin = 60;
-    if (side === 0) { x = 30 + Math.random() * (MAP_W - 60); y = margin; }
-    else if (side === 1) { x = MAP_W - margin; y = 30 + Math.random() * (MAP_H - 60); }
-    else if (side === 2) { x = 30 + Math.random() * (MAP_W - 60); y = MAP_H - margin; }
-    else { x = margin; y = 30 + Math.random() * (MAP_H - 60); }
-    tries++;
-  } while (tries < 20 && (collidesAny(x, y, 14, s.walls) || Math.hypot(x - s.player.x, y - s.player.y) < 350));
-  s.enemies.push({ x, y, r: 14, hp: 40, maxHp: 40, speed: 80 + Math.random() * 50 });
-}
-
-function tryFire(now) {
-  const s = gameState;
-  const w = weapons[s.weapon];
-  if (now - s.lastShot < w.cooldown) return;
-  s.lastShot = now;
-  const p = s.player;
-  if (w.melee) {
-    for (let i = s.enemies.length - 1; i >= 0; i--) {
-      const e = s.enemies[i];
-      const d = Math.hypot(e.x - p.x, e.y - p.y);
-      if (d < w.range + e.r) {
-        const ang = Math.atan2(e.y - p.y, e.x - p.x);
-        let diff = ang - p.angle;
-        while (diff > Math.PI) diff -= Math.PI * 2;
-        while (diff < -Math.PI) diff += Math.PI * 2;
-        if (Math.abs(diff) < Math.PI / 3) {
-          e.hp -= w.dmg;
-          if (e.hp <= 0) {
-            s.enemies.splice(i, 1);
-            s.kills++; s.score += 100;
-            hudScore.textContent = s.score;
-            hudKills.textContent = s.kills;
-          }
-        }
-      }
-    }
-    return;
-  }
-  const ang = p.angle + (Math.random() - 0.5) * w.spread;
-  s.bullets.push({
-    x: p.x + Math.cos(ang) * (p.r + 4),
-    y: p.y + Math.sin(ang) * (p.r + 4),
-    vx: Math.cos(ang) * w.speed,
-    vy: Math.sin(ang) * w.speed,
-    r: w.size,
-    dmg: w.dmg,
-    life: w.range / w.speed,
-    color: w.color
-  });
-}
-
-function update(dt, now) {
-  const s = gameState;
-  const p = s.player;
-
-  let mx = s.joystick.x, my = s.joystick.y;
-  if (s.keys['w'] || s.keys['arrowup'] || s.keys['ц']) my -= 1;
-  if (s.keys['s'] || s.keys['arrowdown'] || s.keys['ы']) my += 1;
-  if (s.keys['a'] || s.keys['arrowleft'] || s.keys['ф']) mx -= 1;
-  if (s.keys['d'] || s.keys['arrowright'] || s.keys['в']) mx += 1;
-  const mag = Math.hypot(mx, my);
-  if (mag > 1) { mx /= mag; my /= mag; }
-
-  const nx = p.x + mx * p.speed * dt;
-  const ny = p.y + my * p.speed * dt;
-  if (!collidesAny(nx, p.y, p.r, s.walls)) p.x = nx;
-  if (!collidesAny(p.x, ny, p.r, s.walls)) p.y = ny;
-
-  // Автоприцел на ближайшего врага
-  let nearest = null, nearestDist = Infinity;
-  for (let i = 0; i < s.enemies.length; i++) {
-    const e = s.enemies[i];
-    const d = Math.hypot(e.x - p.x, e.y - p.y);
-    if (d < nearestDist) { nearestDist = d; nearest = e; }
-  }
-  if (nearest) p.angle = Math.atan2(nearest.y - p.y, nearest.x - p.x);
-
-  // Спавн
-  s.spawnTimer += dt;
-  const spawnDelay = Math.max(0.7, 2.0 - s.kills * 0.02);
-  if (s.spawnTimer > spawnDelay && s.enemies.length < 20) {
-    s.spawnTimer = 0;
-    spawnEnemy();
-  }
-
-  // Враги
-  for (let i = s.enemies.length - 1; i >= 0; i--) {
-    const e = s.enemies[i];
-    const dx = p.x - e.x, dy = p.y - e.y;
-    const dist = Math.hypot(dx, dy) || 1;
-    const ex = dx / dist * e.speed * dt;
-    const ey = dy / dist * e.speed * dt;
-    if (!collidesAny(e.x + ex, e.y, e.r, s.walls)) e.x += ex;
-    if (!collidesAny(e.x, e.y + ey, e.r, s.walls)) e.y += ey;
-    if (dist < p.r + e.r + 2) {
-      p.hp -= 22 * dt;
-      if (p.hp <= 0) { p.hp = 0; hudHp.textContent = '0'; gameOver(); return; }
-      hudHp.textContent = Math.ceil(p.hp);
-      if (p.hp < 40) hudHp.classList.add('low');
-    }
-  }
-
-  if (s.firing) tryFire(now);
-
-  // Пули
-  for (let i = s.bullets.length - 1; i >= 0; i--) {
-    const b = s.bullets[i];
-    b.x += b.vx * dt;
-    b.y += b.vy * dt;
-    b.life -= dt;
-    if (b.life <= 0 || collidesAny(b.x, b.y, b.r, s.walls)) { s.bullets.splice(i, 1); continue; }
-    for (let j = s.enemies.length - 1; j >= 0; j--) {
-      const e = s.enemies[j];
-      if (Math.hypot(b.x - e.x, b.y - e.y) < e.r + b.r) {
-        e.hp -= b.dmg;
-        s.bullets.splice(i, 1);
-        if (e.hp <= 0) {
-          s.enemies.splice(j, 1);
-          s.kills++; s.score += 100;
-          hudScore.textContent = s.score;
-          hudKills.textContent = s.kills;
-          for (let k = 0; k < 12; k++) {
-            const ang = Math.random() * Math.PI * 2;
-            const spd = 80 + Math.random() * 180;
-            s.particles.push({ x: e.x, y: e.y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, life: 0.6, maxLife: 0.6, color: '#b8232b' });
-          }
-        }
-        break;
-      }
-    }
-  }
-
-  // Частицы
-  for (let i = s.particles.length - 1; i >= 0; i--) {
-    const pt = s.particles[i];
-    pt.x += pt.vx * dt;
-    pt.y += pt.vy * dt;
-    pt.vx *= 0.92; pt.vy *= 0.92;
-    pt.life -= dt;
-    if (pt.life <= 0) s.particles.splice(i, 1);
-  }
-
-  // Реген
-  if (p.hp < p.maxHp) {
-    p.hp = Math.min(p.maxHp, p.hp + 3 * dt);
-    hudHp.textContent = Math.ceil(p.hp);
-    if (p.hp >= 40) hudHp.classList.remove('low');
-  }
-}
-
-function render() {
-  const s = gameState;
-  const p = s.player;
-  const W = gameCanvas.width, H = gameCanvas.height;
-  const camX = p.x - W / 2;
-  const camY = p.y - H / 2;
-
-  ctx.fillStyle = '#0a0506';
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.strokeStyle = 'rgba(42, 20, 22, 0.6)';
-  ctx.lineWidth = 1;
-  const gs = 60;
-  const startX = -(((camX % gs) + gs) % gs);
-  const startY = -(((camY % gs) + gs) % gs);
-  for (let x = startX; x < W; x += gs) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-  for (let y = startY; y < H; y += gs) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-
-  for (let i = 0; i < s.walls.length; i++) {
-    const w = s.walls[i];
-    const sx = w.x - camX, sy = w.y - camY;
-    if (sx + w.w < 0 || sx > W || sy + w.h < 0 || sy > H) continue;
-    ctx.fillStyle = '#1a0d0f';
-    ctx.fillRect(sx, sy, w.w, w.h);
-    ctx.strokeStyle = '#48191d';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(sx + 1, sy + 1, w.w - 2, w.h - 2);
-    ctx.strokeStyle = 'rgba(72, 25, 29, 0.4)';
-    ctx.lineWidth = 1;
-    for (let d = 0; d < w.w + w.h; d += 14) {
-      ctx.beginPath();
-      ctx.moveTo(sx + Math.min(d, w.w), sy + Math.max(0, d - w.w));
-      ctx.lineTo(sx + Math.max(0, d - w.h), sy + Math.min(d, w.h));
-      ctx.stroke();
-    }
-  }
-
-  for (let i = 0; i < s.particles.length; i++) {
-    const pt = s.particles[i];
-    ctx.globalAlpha = pt.life / pt.maxLife;
-    ctx.fillStyle = pt.color;
-    ctx.beginPath();
-    ctx.arc(pt.x - camX, pt.y - camY, 3, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-
-  for (let i = 0; i < s.enemies.length; i++) {
-    const e = s.enemies[i];
-    const sx = e.x - camX, sy = e.y - camY;
-    if (sx < -50 || sx > W + 50 || sy < -50 || sy > H + 50) continue;
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.ellipse(sx, sy + e.r - 3, e.r, e.r * 0.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#6b5254';
-    ctx.beginPath();
-    ctx.arc(sx, sy, e.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#2a1416';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = '#b8232b';
-    const eyeAng = Math.atan2(p.y - e.y, p.x - e.x);
-    ctx.beginPath();
-    ctx.arc(sx + Math.cos(eyeAng - 0.3) * 5, sy + Math.sin(eyeAng - 0.3) * 5, 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(sx + Math.cos(eyeAng + 0.3) * 5, sy + Math.sin(eyeAng + 0.3) * 5, 2, 0, Math.PI * 2);
-    ctx.fill();
-    if (e.hp < e.maxHp) {
-      const barW = e.r * 2;
-      ctx.fillStyle = '#2a1416';
-      ctx.fillRect(sx - barW / 2, sy - e.r - 8, barW, 3);
-      ctx.fillStyle = '#b8232b';
-      ctx.fillRect(sx - barW / 2, sy - e.r - 8, barW * (e.hp / e.maxHp), 3);
-    }
-  }
-
-  for (let i = 0; i < s.bullets.length; i++) {
-    const b = s.bullets[i];
-    ctx.fillStyle = b.color;
-    ctx.shadowColor = b.color;
-    ctx.shadowBlur = 8;
-    ctx.beginPath();
-    ctx.arc(b.x - camX, b.y - camY, b.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.shadowBlur = 0;
-
-  const psx = p.x - camX, psy = p.y - camY;
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
-  ctx.beginPath();
-  ctx.ellipse(psx, psy + p.r - 3, p.r, p.r * 0.5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#b8232b';
-  ctx.beginPath();
-  ctx.arc(psx, psy, p.r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#efe6e6';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.strokeStyle = '#efe6e6';
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(psx + Math.cos(p.angle) * p.r, psy + Math.sin(p.angle) * p.r);
-  ctx.lineTo(psx + Math.cos(p.angle) * (p.r + 10), psy + Math.sin(p.angle) * (p.r + 10));
-  ctx.stroke();
-
-  drawMinimap();
-}
-
-function drawMinimap() {
-  const s = gameState;
-  const W = gameCanvas.width;
-  const mmW = 90, mmH = 90;
-  const mmX = W - mmW - 12, mmY = 60;
-  const sx = mmW / MAP_W, sy = mmH / MAP_H;
-  ctx.fillStyle = 'rgba(12, 6, 7, 0.85)';
-  ctx.fillRect(mmX, mmY, mmW, mmH);
-  ctx.strokeStyle = '#48191d';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(mmX, mmY, mmW, mmH);
-  ctx.fillStyle = 'rgba(72, 25, 29, 0.8)';
-  for (let i = 0; i < s.walls.length; i++) {
-    const w = s.walls[i];
-    ctx.fillRect(mmX + w.x * sx, mmY + w.y * sy, Math.max(1, w.w * sx), Math.max(1, w.h * sy));
-  }
-  ctx.fillStyle = '#6b5254';
-  for (let i = 0; i < s.enemies.length; i++) {
-    const e = s.enemies[i];
-    ctx.fillRect(mmX + e.x * sx - 1, mmY + e.y * sy - 1, 2, 2);
-  }
-  ctx.fillStyle = '#b8232b';
-  ctx.beginPath();
-  ctx.arc(mmX + s.player.x * sx, mmY + s.player.y * sy, 3, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function gameOver() {
-  gameRunning = false;
-  gameOverScreen.classList.add('active');
-  finalScore.textContent = gameState.score;
-  finalKills.textContent = gameState.kills;
-}
-
-function closeGame() {
-  gameRunning = false;
-  if (rafId) cancelAnimationFrame(rafId);
-  gameOverlay.classList.remove('active');
-  gameOverScreen.classList.remove('active');
-}
-
-// Подключение управления игрой
-(function setupGameControls() {
-  const btn = document.getElementById('trainBtn');
-  if (btn) btn.addEventListener('click', startGame);
-  const closeBtn = document.getElementById('closeGame');
-  if (closeBtn) closeBtn.addEventListener('click', closeGame);
-  const restart = document.getElementById('restartBtn');
-  if (restart) restart.addEventListener('click', startGame);
-
-  window.addEventListener('resize', () => { if (gameRunning) resizeCanvas(); });
-
-  const joystick = document.getElementById('joystick');
-  const joystickKnob = document.getElementById('joystickKnob');
-  let joyActive = false;
-  let joyCenterX = 0, joyCenterY = 0;
-
-  function joyStart(e) {
-    e.preventDefault();
-    const rect = joystick.getBoundingClientRect();
-    joyCenterX = rect.left + rect.width / 2;
-    joyCenterY = rect.top + rect.height / 2;
-    joyActive = true;
-    joyMove(e);
-  }
-  function joyMove(e) {
-    if (!joyActive || !gameState) return;
-    e.preventDefault();
-    const t = e.touches ? e.touches[0] : e;
-    let dx = t.clientX - joyCenterX;
-    let dy = t.clientY - joyCenterY;
-    const maxR = 35;
-    const mag = Math.hypot(dx, dy);
-    if (mag > maxR) { dx = dx / mag * maxR; dy = dy / mag * maxR; }
-    joystickKnob.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px))';
-    gameState.joystick.x = dx / maxR;
-    gameState.joystick.y = dy / maxR;
-  }
-  function joyEnd() {
-    joyActive = false;
-    joystickKnob.style.transform = 'translate(-50%, -50%)';
-    if (gameState) { gameState.joystick.x = 0; gameState.joystick.y = 0; }
-  }
-  if (joystick) {
-    joystick.addEventListener('mousedown', joyStart);
-    joystick.addEventListener('touchstart', joyStart, { passive: false });
-    document.addEventListener('mousemove', joyMove);
-    document.addEventListener('touchmove', joyMove, { passive: false });
-    document.addEventListener('mouseup', joyEnd);
-    document.addEventListener('touchend', joyEnd);
-  }
-
-  const fireBtn = document.getElementById('fireBtn');
-  function fireStart(e) { e.preventDefault(); if (gameState) gameState.firing = true; }
-  function fireEnd() { if (gameState) gameState.firing = false; }
-  if (fireBtn) {
-    fireBtn.addEventListener('mousedown', fireStart);
-    fireBtn.addEventListener('touchstart', fireStart, { passive: false });
-    fireBtn.addEventListener('mouseup', fireEnd);
-    fireBtn.addEventListener('mouseleave', fireEnd);
-    fireBtn.addEventListener('touchend', fireEnd);
-  }
-
-  document.querySelectorAll('.weapon-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.weapon-btn').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      if (gameState) gameState.weapon = b.dataset.weapon;
-    });
-  });
-
-  document.addEventListener('keydown', e => {
-    if (!gameState) return;
-    gameState.keys[e.key.toLowerCase()] = true;
-    if (e.key === '1') { gameState.weapon = 'pistol'; setWeaponBtn('pistol'); }
-    if (e.key === '2') { gameState.weapon = 'ak'; setWeaponBtn('ak'); }
-    if (e.key === '3') { gameState.weapon = 'knife'; setWeaponBtn('knife'); }
-    if (e.key === ' ') { gameState.firing = true; e.preventDefault(); }
-  });
-  document.addEventListener('keyup', e => {
-    if (!gameState) return;
-    gameState.keys[e.key.toLowerCase()] = false;
-    if (e.key === ' ') gameState.firing = false;
-  });
-  function setWeaponBtn(name) {
-    document.querySelectorAll('.weapon-btn').forEach(x => {
-      x.classList.toggle('active', x.dataset.weapon === name);
-    });
-  }
-})();
-</script>
-</body>
-</html>
+  { who: "БРОНЕМОПС", text: "двигатель прогрелся
